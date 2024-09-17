@@ -10,12 +10,15 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("Usage: secretsanta <filename>")
-		return
+	configPath := "individuals.json"
+	if envConfigPath := os.Getenv("CONFIG_PATH"); envConfigPath != "" {
+		configPath = envConfigPath
 	}
-	filename := os.Args[1]
-	data, err := os.ReadFile(filename)
+	if len(os.Args) > 1 {
+		configPath = os.Args[1]
+	}
+	fmt.Printf("Using config file: %s\n", configPath)
+	data, err := os.ReadFile(configPath)
 	if err != nil {
 		fmt.Println(err)
 		return
