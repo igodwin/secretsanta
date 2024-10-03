@@ -3,14 +3,37 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/igodwin/secretsanta/internal/individual"
+	. "github.com/igodwin/secretsanta/internal/participant"
 	"math/rand"
 	"os"
 	"strings"
 )
 
+func shuffleParticipantSlice(participants []Participant) []Participant {
+	rand.Shuffle(len(participants), func(i, j int) {
+		participants[i], participants[j] = participants[j], participants[i]
+	})
+	return participants
+}
+
+func drawNames(participants []Participant) error {
+
+	participants = shuffleParticipantSlice(participants)
+	recipients := make([]Participant, len(participants))
+	for i, p := range participants {
+		recipients[i] = p
+	}
+	recipients = shuffleParticipantSlice(recipients)
+
+	for _, i := range participants {
+		fmt.Println(fmt.Sprintf("Found individual named %s with the email addresses %s. Participant also has the following exclusion(s): %s", i.Name, strings.Join(i.Email, ", "), strings.Join(i.Exclusions, ", ")))
+	}
+
+	return nil
+}
+
 func main() {
-	configPath := "individuals.json"
+	configPath := "participants.json"
 	if envConfigPath := os.Getenv("CONFIG_PATH"); envConfigPath != "" {
 		configPath = envConfigPath
 	}
@@ -24,19 +47,16 @@ func main() {
 		return
 	}
 
-	var individuals []individual.Individual
-	err = json.Unmarshal(data, &individuals)
+	var participants []Participant
+	err = json.Unmarshal(data, &participants)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	// Shuffle the slice
-	rand.Shuffle(len(individuals), func(i, j int) {
-		individuals[i], individuals[j] = individuals[j], individuals[i]
-	})
-
-	for _, i := range individuals {
-		fmt.Println(fmt.Sprintf("Found individual named %s with the email addresses %s. Individual also has the following exclusion(s): %s", i.Name, strings.Join(i.Email, ", "), strings.Join(i.Exclusions, ", ")))
+	err = drawNames(participants)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 }
