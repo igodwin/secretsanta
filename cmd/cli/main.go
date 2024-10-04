@@ -6,29 +6,57 @@ import (
 	. "github.com/igodwin/secretsanta/internal/participant"
 	"math/rand"
 	"os"
-	"strings"
 )
 
-func shuffleParticipantSlice(participants []Participant) []Participant {
+const maxRetries = 1000
+
+func shuffleParticipants(participants []*Participant) []*Participant {
 	rand.Shuffle(len(participants), func(i, j int) {
 		participants[i], participants[j] = participants[j], participants[i]
 	})
 	return participants
 }
 
-func drawNames(participants []Participant) error {
+func drawNames(participants []*Participant) ([]*Participant, error) {
+	participants = shuffleParticipants(participants)
 
-	participants = shuffleParticipantSlice(participants)
-	recipients := make([]Participant, len(participants))
-	for i, p := range participants {
-		recipients[i] = p
+	for i := 0; i < maxRetries; i++ {
+		recipients := shuffleParticipants(participants)
+		usedRecipients := make([]bool, len(recipients))
+		usedCount := 0
+
+		for _, participant := range participants {
+			matched := false
+			for j := 0; j < len(recipients); j++ {
+				possibleRecipient := recipients[j]
+				if usedRecipients[j] {
+					continue
+				}
+
+				if err := participant.UpdateRecipient(possibleRecipient); err == nil {
+					usedRecipients[j] = true
+					usedCount++
+					matched = true
+					break
+				}
+			}
+			if !matched {
+				break
+			}
+		}
+
+		if usedCount == len(recipients) {
+			break
+		}
 	}
-	recipients = shuffleParticipantSlice(recipients)
 
-	for _, i := range participants {
-		fmt.Println(fmt.Sprintf("Found individual named %s with the email addresses %s. Participant also has the following exclusion(s): %s", i.Name, strings.Join(i.Email, ", "), strings.Join(i.Exclusions, ", ")))
+	return participants, nil
+}
+
+func notify(participants []*Participant) error {
+	for _, participant := range participants {
+		fmt.Printf("%s is buying for %s\n", participant.Name, participant.Recipient.Name)
 	}
-
 	return nil
 }
 
@@ -47,14 +75,20 @@ func main() {
 		return
 	}
 
-	var participants []Participant
+	var participants []*Participant
 	err = json.Unmarshal(data, &participants)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	err = drawNames(participants)
+	participants, err = drawNames(participants)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	err = notify(participants)
 	if err != nil {
 		fmt.Println(err)
 		return

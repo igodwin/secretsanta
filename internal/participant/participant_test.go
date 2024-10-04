@@ -27,20 +27,24 @@ var _ = Describe("Participant", func() {
 		}
 	})
 
-	Describe("UpdateMatch", func() {
+	Describe("UpdateRecipient", func() {
 		Context("without exclusions", func() {
 			It("should allow any individual to be set", func() {
-				Expect(ind0.UpdateMatch(ind1)).To(Succeed())
-				Expect(ind0.UpdateMatch(ind2)).To(Succeed())
+				Expect(ind0.UpdateRecipient(ind1)).To(Succeed())
+				Expect(ind0.UpdateRecipient(ind2)).To(Succeed())
 			})
 		})
 		Context("with exclusions", func() {
 			It("should allow an individual that is not excluded to be set", func() {
-				Expect(ind1.UpdateMatch(ind2)).To(Succeed())
+				Expect(ind1.UpdateRecipient(ind2)).To(Succeed())
 			})
 
 			It("should not allow an individual that is excluded to be set", func() {
-				Expect(ind1.UpdateMatch(ind0)).To(MatchError(fmt.Errorf("participant %s is excluded", ind0.Name)))
+				Expect(ind1.UpdateRecipient(ind0)).To(MatchError(fmt.Errorf("participant %s is excluded", ind0.Name)))
+			})
+
+			It("should not allow self to be set", func() {
+				Expect(ind1.UpdateRecipient(ind1)).To(MatchError("cannot update match with self"))
 			})
 		})
 	})

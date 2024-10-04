@@ -1,0 +1,152 @@
+[
+  {
+    "name": "Participant 1",
+    "email": ["participant1@example.com", "participant1.alt@example.com"],
+    "exclusions": ["Participant 2", "Participant 3"]
+  },
+  {
+    "name": "Participant 2",
+    "email": ["participant2@example.com"],
+    "exclusions": ["Participant 1"]
+  },
+  {
+    "name": "Participant 3",
+    "email": ["participant3@example.com"],
+    "exclusions": ["Participant 4"]
+  },
+  {
+    "name": "Participant 4",
+    "email": ["participant4@example.com"],
+    "exclusions": ["Participant 3"]
+  },
+  {
+    "name": "Participant 5",
+    "email": ["participant5@example.com"],
+    "exclusions": []
+  },
+  {
+    "name": "Participant 6",
+    "email": ["participant6@example.com"],
+    "exclusions": []
+  },
+  {
+    "name": "Participant 7",
+    "email": ["participant7@example.com"],
+    "exclusions": ["Participant 8"]
+  },
+  {
+    "name": "Participant 8",
+    "email": ["participant8@example.com"],
+    "exclusions": ["Participant 7"]
+  },
+  {
+    "name": "Participant 9",
+    "email": ["participant9@example.com"],
+    "exclusions": ["Participant 10"]
+  },
+  {
+    "name": "Participant 10",
+    "email": ["participant10@example.com"],
+    "exclusions": ["Participant 9"]
+  },
+  {
+    "name": "Participant 11",
+    "email": ["participant11@example.com"],
+    "exclusions": []
+  },
+  {
+    "name": "Participant 12",
+    "email": ["participant12@example.com"],
+    "exclusions": []
+  },
+  {
+    "name": "Participant 13",
+    "email": ["participant13@example.com"],
+    "exclusions": ["Participant 14"]
+  },
+  {
+    "name": "Participant 14",
+    "email": ["participant14@example.com"],
+    "exclusions": ["Participant 13"]
+  },
+  {
+    "name": "Participant 15",
+    "email": ["participant15@example.com"],
+    "exclusions": ["Participant 16"]
+  },
+  {
+    "name": "Participant 16",
+    "email": ["participant16@example.com"],
+    "exclusions": ["Participant 15"]
+  },
+  {
+    "name": "Participant 17",
+    "email": ["participant17@example.com"],
+    "exclusions": []
+  },
+  {
+    "name": "Participant 18",
+    "email": ["participant18@example.com"],
+    "exclusions": []
+  },
+  {
+    "name": "Participant 19",
+    "email": ["participant19@example.com"],
+    "exclusions": ["Participant 20"]
+  },
+  {
+    "name": "Participant 20",
+    "email": ["participant20@example.com"],
+    "exclusions": ["Participant 19"]
+  },
+  {
+    "name": "Participant 21",
+    "email": ["participant21@example.com"],
+    "exclusions": ["Participant 22"]
+  },
+  {
+    "name": "Participant 22",
+    "email": ["participant22@example.com"],
+    "exclusions": ["Participant 21"]
+  },
+  {
+    "name": "Participant 23",
+    "email": ["participant23@example.com"],
+    "exclusions": ["Participant 24"]
+  },
+  {
+  "name": "Participant 24",
+  "email": ["participant24@example.com"],
+  "exclusions": ["Participant 23"]
+  },
+  {
+    "name": "Participant 25",
+    "email": ["participant25@example.com"],
+    "exclusions": ["Participant 26"]
+  },
+  {
+    "name": "Participant 26",
+    "email": ["participant26@example.com"],
+    "exclusions": ["Participant 25"]
+  },
+  {
+    "name": "Participant 27",
+    "email": ["participant27@example.com"],
+    "exclusions": ["Participant 28"]
+  },
+  {
+    "name": "Participant 28",
+    "email": ["participant28@example.com"],
+    "exclusions": ["Participant 27"]
+  },
+  {
+    "name": "Participant 29",
+    "email": ["participant29@example.com"],
+    "exclusions": ["Participant 30"]
+  },
+  {
+    "name": "Participant 30",
+    "email": ["participant30@example.com"],
+    "exclusions": ["Participant 29"]
+  }
+]
