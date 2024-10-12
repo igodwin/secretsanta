@@ -48,6 +48,7 @@ func main() {
 		log.Fatalf("error encountered while attempting to send notifications:\n%v", err)
 		return
 	}
+	log.Println("secret santa drawing complete")
 }
 
 func shuffleParticipants(participants []*Participant) []*Participant {

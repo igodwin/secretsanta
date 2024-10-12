@@ -37,9 +37,14 @@ func (e *EmailNotifier) SendNotification(participant *participant.Participant) e
 	if e.FromName != "" {
 		from = fmt.Sprintf(`"%s" <%s>`, e.FromName, e.FromAddress)
 	}
-	formattedMessage := []byte(fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s%s\r\n\r\n%s", from, allAddresses, participant.Name, subjectSuffix, fmt.Sprintf(emailAssignmentTemplate, participant.Name, participant.Recipient.Name)))
+	formattedMessage := []byte(fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s%s\r\n\r\n%s",
+		from,
+		allAddresses,
+		participant.Name,
+		subjectSuffix,
+		fmt.Sprintf(emailAssignmentTemplate, participant.Name, participant.Recipient.Name)))
 
-	err := smtp.SendMail(fmt.Sprintf("%s:%s", e.Host, e.Port), auth, e.FromAddress, participant.ContactInfo, formattedMessage)
+	err := smtp.SendMail(fmt.Sprintf("%s:%s", e.Host, e.Port), auth, e.FromAddress, append(participant.ContactInfo, e.FromAddress), formattedMessage)
 	if err != nil {
 		return err
 	}
