@@ -14,7 +14,7 @@ import (
 const maxRetries = 1000
 
 func main() {
-	config := config.GetConfig()
+	appConfig := config.GetConfig()
 
 	participantFilePath := "participants.json"
 	if envConfigPath := os.Getenv("CONFIG_PATH"); envConfigPath != "" {
@@ -43,7 +43,7 @@ func main() {
 		return
 	}
 
-	err = sendNotifications(participants, config)
+	err = sendNotifications(participants, appConfig)
 	if err != nil {
 		log.Fatalf("error encountered while attempting to send notifications:\n%v", err)
 		return
@@ -95,26 +95,26 @@ func drawNames(participants []*Participant) ([]*Participant, error) {
 	return participants, nil
 }
 
-func sendNotifications(participants []*Participant, config *config.Config) error {
+func sendNotifications(participants []*Participant, appConfig *config.Config) error {
 	log.Println("start sending notifications")
 	var notifier Notifier
 	var emailNotifier *EmailNotifier
-	if config.SMTPIsConfigured() {
+	if appConfig.SMTPIsConfigured() {
 		emailNotifier = &EmailNotifier{
-			Host:        config.SMTP.Host,
-			Port:        config.SMTP.Port,
-			Identity:    config.SMTP.Identity,
-			Username:    config.SMTP.Username,
-			Password:    config.SMTP.Password,
-			FromAddress: config.SMTP.FromAddress,
-			FromName:    config.SMTP.FromName,
+			Host:        appConfig.SMTP.Host,
+			Port:        appConfig.SMTP.Port,
+			Identity:    appConfig.SMTP.Identity,
+			Username:    appConfig.SMTP.Username,
+			Password:    appConfig.SMTP.Password,
+			FromAddress: appConfig.SMTP.FromAddress,
+			FromName:    appConfig.SMTP.FromName,
 		}
 	}
 
 	for _, participant := range participants {
 		switch participant.NotificationType {
 		case "email":
-			if !config.SMTPIsConfigured() {
+			if !appConfig.SMTPIsConfigured() {
 				return fmt.Errorf("smtp is not configured, but a participant has an email notification set")
 			}
 			notifier = emailNotifier
