@@ -3,10 +3,11 @@ package participant
 import "fmt"
 
 type Participant struct {
-	Name       string   `json:"name"`
-	Email      []string `json:"email"`
-	Exclusions []string `json:"exclusions"`
-	Recipient  *Participant
+	Name             string   `json:"name"`
+	NotificationType string   `json:"notification_type"`
+	ContactInfo      []string `json:"contact_info"`
+	Exclusions       []string `json:"exclusions"`
+	Recipient        *Participant
 }
 
 func (p *Participant) UpdateRecipient(participant *Participant) error {

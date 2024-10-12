@@ -1,4 +1,4 @@
-package participant_test
+package notifier_test
 
 import (
 	"testing"
@@ -9,5 +9,5 @@ import (
 
 func TestSecretsanta(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Secretsanta Suite")
+	RunSpecs(t, "Notifier Suite")
 }
