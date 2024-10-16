@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	subjectSuffix           = "'s Secret Santa Assignment"
-	emailAssignmentTemplate = `Hello %s,
+	subjectSuffix     = "'s Secret Santa Assignment"
+	emailBodyTemplate = `Hello %s,
 
 You have been given the important task of finding the perfect gift for %s this year! You are the only person who knows this, so you should try to keep it a surprise. Also don't delete this email too soon, because I'm not going to remember who you have.
 
@@ -42,11 +42,18 @@ func (e *EmailNotifier) SendNotification(participant *participant.Participant) e
 		allAddresses,
 		participant.Name,
 		subjectSuffix,
-		fmt.Sprintf(emailAssignmentTemplate, participant.Name, participant.Recipient.Name)))
+		fmt.Sprintf(emailBodyTemplate, participant.Name, participant.Recipient.Name)))
 
 	err := smtp.SendMail(fmt.Sprintf("%s:%s", e.Host, e.Port), auth, e.FromAddress, append(participant.ContactInfo, e.FromAddress), formattedMessage)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (e *EmailNotifier) IsConfigured() error {
+	if e.Host == "" && e.Port == "" && e.Username == "" && e.Password == "" && e.FromAddress == "" {
+		return fmt.Errorf("smtp is not configured")
 	}
 	return nil
 }

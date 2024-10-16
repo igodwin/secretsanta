@@ -23,7 +23,7 @@ func main() {
 	if len(os.Args) > 1 {
 		participantFilePath = os.Args[1]
 	}
-	log.Printf("using config file: %s\n", participantFilePath)
+	log.Printf("using participant file: %s\n", participantFilePath)
 	data, err := os.ReadFile(participantFilePath)
 	if err != nil {
 		fmt.Println(err)
@@ -59,7 +59,6 @@ func shuffleParticipants(participants []*Participant) []*Participant {
 }
 
 func drawNames(participants []*Participant) ([]*Participant, error) {
-	log.Println("start drawing names")
 	participants = shuffleParticipants(participants)
 
 	for i := 0; i < maxRetries; i++ {
@@ -96,35 +95,30 @@ func drawNames(participants []*Participant) ([]*Participant, error) {
 }
 
 func sendNotifications(participants []*Participant, appConfig *config.Config) error {
-	log.Println("start sending notifications")
 	var notifier Notifier
-	var emailNotifier *EmailNotifier
-	if appConfig.SMTPIsConfigured() {
-		emailNotifier = &EmailNotifier{
-			Host:        appConfig.SMTP.Host,
-			Port:        appConfig.SMTP.Port,
-			Identity:    appConfig.SMTP.Identity,
-			Username:    appConfig.SMTP.Username,
-			Password:    appConfig.SMTP.Password,
-			FromAddress: appConfig.SMTP.FromAddress,
-			FromName:    appConfig.SMTP.FromName,
-		}
+	var emailNotifier = &EmailNotifier{
+		Host:        appConfig.SMTP.Host,
+		Port:        appConfig.SMTP.Port,
+		Identity:    appConfig.SMTP.Identity,
+		Username:    appConfig.SMTP.Username,
+		Password:    appConfig.SMTP.Password,
+		FromAddress: appConfig.SMTP.FromAddress,
+		FromName:    appConfig.SMTP.FromName,
 	}
 
 	for _, participant := range participants {
 		switch participant.NotificationType {
 		case "email":
-			if !appConfig.SMTPIsConfigured() {
-				return fmt.Errorf("smtp is not configured, but a participant has an email notification set")
-			}
 			notifier = emailNotifier
-		case "stdout":
-			notifier = &StdOut{}
 		default:
-			return fmt.Errorf("unsupported notification type")
+			notifier = &StdOut{}
 		}
 
-		err := notifier.SendNotification(participant)
+		err := notifier.IsConfigured()
+		if err != nil {
+			return err
+		}
+		err = notifier.SendNotification(participant)
 		if err != nil {
 			return err
 		}
