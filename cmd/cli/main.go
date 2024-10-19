@@ -110,7 +110,7 @@ func sendNotifications(participants []*Participant, appConfig *config.Config) er
 		case "email":
 			notifier = emailNotifier
 		default:
-			notifier = &StdOut{}
+			notifier = &Stdout{}
 		}
 
 		err := notifier.IsConfigured()

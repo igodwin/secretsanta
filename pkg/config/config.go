@@ -46,7 +46,7 @@ func loadConfig() *Config {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		log.Fatalf("error reading config file: %s", err)
+		log.Fatalf("error reading config file: %v", err)
 	}
 
 	config := &Config{}

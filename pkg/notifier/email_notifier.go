@@ -20,14 +20,17 @@ Merry Christmas!
 Papa Elf`
 )
 
+type SendMailFunc func(addr string, a smtp.Auth, from string, to []string, msg []byte) error
+
 type EmailNotifier struct {
-	Host        string
-	Port        string
-	Identity    string
-	Username    string
-	Password    string
-	FromAddress string
-	FromName    string
+	Host         string
+	Port         string
+	Identity     string
+	Username     string
+	Password     string
+	FromAddress  string
+	FromName     string
+	SendMailFunc SendMailFunc
 }
 
 func (e *EmailNotifier) SendNotification(participant *participant.Participant) error {
@@ -44,7 +47,11 @@ func (e *EmailNotifier) SendNotification(participant *participant.Participant) e
 		subjectSuffix,
 		fmt.Sprintf(emailBodyTemplate, participant.Name, participant.Recipient.Name)))
 
-	err := smtp.SendMail(fmt.Sprintf("%s:%s", e.Host, e.Port), auth, e.FromAddress, append(participant.ContactInfo, e.FromAddress), formattedMessage)
+	if e.SendMailFunc == nil {
+		e.SendMailFunc = smtp.SendMail
+	}
+
+	err := e.SendMailFunc(fmt.Sprintf("%s:%s", e.Host, e.Port), auth, e.FromAddress, append(participant.ContactInfo, e.FromAddress), formattedMessage)
 	if err != nil {
 		return err
 	}

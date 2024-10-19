@@ -8,14 +8,14 @@ import (
 const stdoutAssignmentTemplate = `%s has %s
 `
 
-type StdOut struct {
+type Stdout struct {
 }
 
-func (s *StdOut) SendNotification(participant *participant.Participant) error {
+func (s *Stdout) SendNotification(participant *participant.Participant) error {
 	fmt.Printf(stdoutAssignmentTemplate, participant.Name, participant.Recipient.Name)
 	return nil
 }
 
-func (s *StdOut) IsConfigured() error {
+func (s *Stdout) IsConfigured() error {
 	return nil
 }
