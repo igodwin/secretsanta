@@ -64,6 +64,7 @@ func drawNames(participants []*Participant) ([]*Participant, error) {
 		usedRecipients := make([]bool, len(recipients))
 		usedCount := 0
 
+		// TODO: refactor so no longer O(n^2)
 		for _, participant := range participants {
 			matched := false
 			for j := 0; j < len(recipients); j++ {
