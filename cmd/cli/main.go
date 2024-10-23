@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/igodwin/secretsanta/pkg/config"
 	. "github.com/igodwin/secretsanta/pkg/notifier"
 	. "github.com/igodwin/secretsanta/pkg/participant"
@@ -26,20 +25,20 @@ func main() {
 	log.Printf("using participant file: %s\n", participantFilePath)
 	data, err := os.ReadFile(participantFilePath)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalf("error encountered while reading participant file: \n%v", err)
 		return
 	}
 
 	var participants []*Participant
 	err = json.Unmarshal(data, &participants)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalf("error encountered while loading participants: \n%v", err)
 		return
 	}
 
 	participants, err = drawNames(participants)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalf("error encountered while drawing names: \n%v", err)
 		return
 	}
 
