@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # External notifier service
+  notifier:
+    image: igodwin/notifier:latest
+    container_name: secretsanta-notifier
+    ports:
+      - "50051:50051"  # gRPC port
+      - "8080:8080"    # HTTP REST API port
+    environment:
+      - LOG_LEVEL=info
+      - GRPC_PORT=50051
+      - HTTP_PORT=8080
+    volumes:
+      - ./configs/notifier-config.yaml:/app/config.yaml:ro
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=localhost:50051"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - secretsanta-network
+
+  # Secret Santa application
+  secretsanta:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: secretsanta-app
+    environment:
+      - NOTIFIER_SERVICE_ADDR=notifier:50051
+      - CONFIG_PATH=/app/participants.json
+    volumes:
+      - ./configs/secretsanta.config.toml:/app/config.toml:ro
+      - ./participants.json:/app/participants.json:ro
+    depends_on:
+      notifier:
+        condition: service_healthy
+    networks:
+      - secretsanta-network
+    profiles:
+      - run  # Only start when explicitly requested
+
+  # Development environment with both services
+  dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: dev
+    container_name: secretsanta-dev
+    environment:
+      - NOTIFIER_SERVICE_ADDR=notifier:50051
+    volumes:
+      - .:/app
+      - /app/bin  # Exclude bin directory
+    working_dir: /app
+    command: ["tail", "-f", "/dev/null"]  # Keep container running
+    depends_on:
+      notifier:
+        condition: service_healthy
+    networks:
+      - secretsanta-network
+    profiles:
+      - dev
+
+networks:
+  secretsanta-network:
+    driver: bridge
+
+volumes:
+  notifier-data:
+    driver: local

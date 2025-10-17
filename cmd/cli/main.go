@@ -2,15 +2,14 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/igodwin/secretsanta/pkg/config"
-	. "github.com/igodwin/secretsanta/pkg/notifier"
-	. "github.com/igodwin/secretsanta/pkg/participant"
 	"log"
-	"math/rand"
 	"os"
-)
 
-const maxRetries = 1000
+	"github.com/igodwin/secretsanta/internal/draw"
+	"github.com/igodwin/secretsanta/internal/notification"
+	"github.com/igodwin/secretsanta/pkg/config"
+	"github.com/igodwin/secretsanta/pkg/participant"
+)
 
 func main() {
 	appConfig := config.GetConfig()
@@ -29,98 +28,23 @@ func main() {
 		return
 	}
 
-	var participants []*Participant
+	var participants []*participant.Participant
 	err = json.Unmarshal(data, &participants)
 	if err != nil {
 		log.Fatalf("error encountered while loading participants: \n%v", err)
 		return
 	}
 
-	participants, err = drawNames(participants)
+	participants, err = draw.Names(participants)
 	if err != nil {
 		log.Fatalf("error encountered while drawing names: \n%v", err)
 		return
 	}
 
-	err = sendNotifications(participants, appConfig)
+	err = notification.Send(participants, appConfig)
 	if err != nil {
 		log.Fatalf("error encountered while attempting to send notifications:\n%v", err)
 		return
 	}
 }
 
-func shuffleParticipants(participants []*Participant) []*Participant {
-	rand.Shuffle(len(participants), func(i, j int) {
-		participants[i], participants[j] = participants[j], participants[i]
-	})
-	return participants
-}
-
-func drawNames(participants []*Participant) ([]*Participant, error) {
-	participants = shuffleParticipants(participants)
-
-	for i := 0; i < maxRetries; i++ {
-		recipients := shuffleParticipants(participants)
-		usedRecipients := make([]bool, len(recipients))
-		usedCount := 0
-
-		// TODO: refactor so no longer O(n^2)
-		for _, participant := range participants {
-			matched := false
-			for j := 0; j < len(recipients); j++ {
-				possibleRecipient := recipients[j]
-				if usedRecipients[j] {
-					continue
-				}
-
-				if err := participant.UpdateRecipient(possibleRecipient); err == nil {
-					usedRecipients[j] = true
-					usedCount++
-					matched = true
-					break
-				}
-			}
-			if !matched {
-				break
-			}
-		}
-
-		if usedCount == len(recipients) {
-			break
-		}
-	}
-
-	return participants, nil
-}
-
-func sendNotifications(participants []*Participant, appConfig *config.Config) error {
-	var notifier Notifier
-	var emailNotifier = &EmailNotifier{
-		Host:        appConfig.SMTP.Host,
-		Port:        appConfig.SMTP.Port,
-		Identity:    appConfig.SMTP.Identity,
-		Username:    appConfig.SMTP.Username,
-		Password:    appConfig.SMTP.Password,
-		FromAddress: appConfig.SMTP.FromAddress,
-		FromName:    appConfig.SMTP.FromName,
-	}
-
-	for _, participant := range participants {
-		switch participant.NotificationType {
-		case "email":
-			notifier = emailNotifier
-		default:
-			notifier = &Stdout{}
-		}
-
-		err := notifier.IsConfigured()
-		if err != nil {
-			return err
-		}
-		err = notifier.SendNotification(participant)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}

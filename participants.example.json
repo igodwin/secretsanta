@@ -1,0 +1,49 @@
+[
+  {
+    "name": "Alice Johnson",
+    "notification_type": "email",
+    "contact_info": [
+      "alice.johnson@example.com"
+    ],
+    "exclusions": [
+      "Bob Smith"
+    ]
+  },
+  {
+    "name": "Bob Smith", 
+    "notification_type": "email",
+    "contact_info": [
+      "bob.smith@example.com",
+      "bob.personal@gmail.com"
+    ],
+    "exclusions": [
+      "Alice Johnson"
+    ]
+  },
+  {
+    "name": "Carol Williams",
+    "notification_type": "email", 
+    "contact_info": [
+      "carol.williams@example.com"
+    ],
+    "exclusions": []
+  },
+  {
+    "name": "David Brown",
+    "notification_type": "slack",
+    "contact_info": [
+      "@david.brown"
+    ],
+    "exclusions": [
+      "Carol Williams"
+    ]
+  },
+  {
+    "name": "Eva Davis",
+    "notification_type": "email",
+    "contact_info": [
+      "eva.davis@example.com"
+    ],
+    "exclusions": []
+  }
+]

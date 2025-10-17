@@ -14,7 +14,8 @@ var (
 )
 
 type Config struct {
-	SMTP SMTPConfig `mapstructure:"smtp"`
+	SMTP      SMTPConfig      `mapstructure:"smtp"`
+	Notifier  NotifierConfig  `mapstructure:"notifier"`
 }
 
 type SMTPConfig struct {
@@ -25,6 +26,11 @@ type SMTPConfig struct {
 	Password    string `mapstructure:"password"`
 	FromAddress string `mapstructure:"from_address"`
 	FromName    string `mapstructure:"from_name"`
+}
+
+type NotifierConfig struct {
+	ServiceAddr    string `mapstructure:"service_addr"`
+	ArchiveEmail   string `mapstructure:"archive_email"`
 }
 
 func GetConfig() *Config {
