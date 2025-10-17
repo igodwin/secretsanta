@@ -29,12 +29,12 @@ all: build copy-config
 build:
 	@echo "Building the project..."
 	@mkdir -p $(BUILD_DIR)
-	go build -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/cli
+	go build -o $(BUILD_DIR)/$(BINARY_NAME) ./bin/cli
 
 build-linux:
 	@echo "Building for Linux..."
 	@mkdir -p $(BUILD_DIR)
-	GOOS=linux GOARCH=amd64 go build -o $(BUILD_DIR)/$(BINARY_NAME)-linux ./cmd/cli
+	GOOS=linux GOARCH=amd64 go build -o $(BUILD_DIR)/$(BINARY_NAME)-linux ./bin/cli
 
 copy-config:
 	@echo "Copying config template..."
