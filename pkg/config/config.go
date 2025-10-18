@@ -2,6 +2,8 @@ package config
 
 import (
 	"log"
+	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/spf13/viper"
@@ -10,8 +12,17 @@ import (
 var (
 	configInstance *Config
 	once           sync.Once
-	Paths          = []string{"/etc/secretsanta/", "$HOME/.secretsanta", "."}
+	Paths          = []string{"/etc/secretsanta/", "$HOME/.secretsanta", ".", getBinaryDir()}
 )
+
+// getBinaryDir returns the directory containing the running binary
+func getBinaryDir() string {
+	exe, err := os.Executable()
+	if err != nil {
+		return "."
+	}
+	return filepath.Dir(exe)
+}
 
 type Config struct {
 	SMTP      SMTPConfig      `mapstructure:"smtp"`
@@ -41,6 +52,20 @@ func GetConfig() *Config {
 }
 
 func loadConfig() *Config {
+	// Set defaults for all fields (allows running without config file)
+	viper.SetDefault("smtp.host", "")
+	viper.SetDefault("smtp.port", "")
+	viper.SetDefault("smtp.identity", "")
+	viper.SetDefault("smtp.username", "")
+	viper.SetDefault("smtp.password", "")
+	viper.SetDefault("smtp.from_address", "")
+	viper.SetDefault("smtp.from_name", "Secret Santa")
+	viper.SetDefault("notifier.service_addr", "")
+	viper.SetDefault("notifier.archive_email", "")
+
+	viper.AutomaticEnv()
+
+	// Try to find config file with name "secretsanta.config" (no extension)
 	viper.SetConfigName("secretsanta.config")
 	viper.SetConfigType("toml")
 
@@ -48,11 +73,16 @@ func loadConfig() *Config {
 		viper.AddConfigPath(path)
 	}
 
-	viper.AutomaticEnv()
-
 	err := viper.ReadInConfig()
 	if err != nil {
-		log.Fatalf("error reading config file: %v", err)
+		// Config file not found is acceptable - use defaults
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			// It's a different error (e.g., parse error)
+			log.Fatalf("error reading config file: %v", err)
+		}
+		log.Println("No config file found, using defaults (stdout notifications only)")
+	} else {
+		log.Printf("Loaded config from: %s", viper.ConfigFileUsed())
 	}
 
 	config := &Config{}

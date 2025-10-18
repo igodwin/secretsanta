@@ -27,14 +27,26 @@ all: build copy-config
 
 # Build targets
 build:
-	@echo "Building the project..."
+	@echo "Building the CLI..."
 	@mkdir -p $(BUILD_DIR)
-	go build -o $(BUILD_DIR)/$(BINARY_NAME) ./bin/cli
+	go build -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/cli
+
+build-web:
+	@echo "Building the web server..."
+	@mkdir -p $(BUILD_DIR)
+	go build -o $(BUILD_DIR)/secretsanta-web ./cmd/web
+
+build-all: build build-web
 
 build-linux:
 	@echo "Building for Linux..."
 	@mkdir -p $(BUILD_DIR)
-	GOOS=linux GOARCH=amd64 go build -o $(BUILD_DIR)/$(BINARY_NAME)-linux ./bin/cli
+	GOOS=linux GOARCH=amd64 go build -o $(BUILD_DIR)/$(BINARY_NAME)-linux ./cmd/cli
+	GOOS=linux GOARCH=amd64 go build -o $(BUILD_DIR)/secretsanta-web-linux ./cmd/web
+
+run-web:
+	@echo "Starting web server..."
+	go run ./cmd/web
 
 copy-config:
 	@echo "Copying config template..."
@@ -164,11 +176,15 @@ clean-docker:
 # Help target
 help:
 	@echo "Available targets:"
-	@echo "  build              - Build the secretsanta binary"
+	@echo "  build              - Build the CLI binary"
+	@echo "  build-web          - Build the web server"
+	@echo "  build-all          - Build both CLI and web server"
 	@echo "  build-linux        - Build for Linux (cross-compile)"
+	@echo "  run-web            - Run web server in development mode"
 	@echo "  copy-config        - Copy config template to build directory"
 	@echo "  docker-build       - Build Docker image for secretsanta"
 	@echo "  docker-build-notifier - Build notifier service Docker image"
+	@echo "  docker-buildx-build - Build multi-architecture images"
 	@echo "  compose-up         - Start notifier service only"
 	@echo "  compose-up-dev     - Start development environment"
 	@echo "  compose-run        - Run secretsanta with notifier service"
@@ -184,6 +200,7 @@ help:
 	@echo "  clean-docker       - Clean Docker containers and images"
 	@echo "  help               - Show this help message"
 
-.PHONY: all build build-linux copy-config docker-build docker-build-notifier \
+.PHONY: all build build-web build-all build-linux run-web copy-config docker-build docker-build-notifier \
+        docker-buildx-setup docker-buildx-build docker-buildx-build-local docker-buildx-inspect docker-buildx-cleanup \
         compose-up compose-up-dev compose-run compose-down compose-logs compose-logs-notifier \
         test test-coverage lint format mod-tidy clean clean-docker help

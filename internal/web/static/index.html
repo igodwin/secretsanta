@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa - Gift Exchange Manager</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎅 Secret Santa</h1>
+            <p class="subtitle">Organize your gift exchange with ease</p>
+        </header>
+
+        <main>
+            <!-- Tab Navigation -->
+            <div class="tabs">
+                <button class="tab-button active" data-tab="create">Create Participants</button>
+                <button class="tab-button" data-tab="upload">Upload File</button>
+                <button class="tab-button" data-tab="draw">Run Draw</button>
+            </div>
+
+            <!-- Create Tab -->
+            <div id="create-tab" class="tab-content active">
+                <h2>Add Participants</h2>
+                <form id="participant-form" class="participant-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Name *</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="notification-type">Notification Type</label>
+                            <select id="notification-type" name="notification_type">
+                                <option value="email">Email</option>
+                                <option value="slack">Slack</option>
+                                <option value="stdout">Console</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact-info">Contact Info *</label>
+                        <input type="text" id="contact-info" name="contact_info"
+                               placeholder="email@example.com (comma-separated for multiple)" required>
+                        <small>Enter email addresses or usernames separated by commas</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exclusions">Exclusions (Optional)</label>
+                        <input type="text" id="exclusions" name="exclusions"
+                               placeholder="Names to exclude (comma-separated)">
+                        <small>People this person should NOT be assigned to</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Add Participant</button>
+                </form>
+
+                <div class="participant-list">
+                    <h3>Participants (<span id="participant-count">0</span>)</h3>
+                    <div id="participants-container"></div>
+                </div>
+
+                <div class="actions">
+                    <button id="validate-btn" class="btn btn-secondary">Validate Configuration</button>
+                    <button id="clear-btn" class="btn btn-danger">Clear All</button>
+                </div>
+            </div>
+
+            <!-- Upload Tab -->
+            <div id="upload-tab" class="tab-content">
+                <h2>Upload Participant File</h2>
+                <div class="upload-section">
+                    <div class="upload-area" id="upload-area">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p>Drop file here or click to browse</p>
+                        <p class="upload-formats">Supported: JSON, YAML, TOML, CSV, TSV</p>
+                        <input type="file" id="file-input" accept=".json,.yaml,.yml,.toml,.csv,.tsv" hidden>
+                        <button class="btn btn-secondary" id="browse-btn">Browse Files</button>
+                    </div>
+                </div>
+
+                <div class="format-tabs">
+                    <div class="format-tab-buttons">
+                        <button class="format-tab-btn active" data-format="json">JSON</button>
+                        <button class="format-tab-btn" data-format="yaml">YAML</button>
+                        <button class="format-tab-btn" data-format="csv">CSV</button>
+                        <button class="format-tab-btn" data-format="tsv">TSV</button>
+                        <button class="format-tab-btn" data-format="toml">TOML</button>
+                    </div>
+
+                    <div id="format-json" class="format-content active">
+                        <h3>JSON Format Example</h3>
+                        <pre><code>[
+  {
+    "name": "Alice Johnson",
+    "notification_type": "email",
+    "contact_info": ["alice@example.com"],
+    "exclusions": ["Bob Smith"]
+  },
+  {
+    "name": "Bob Smith",
+    "notification_type": "email",
+    "contact_info": ["bob@example.com"],
+    "exclusions": ["Alice Johnson"]
+  }
+]</code></pre>
+                        <button class="btn btn-secondary download-template" data-format="json">Download JSON Template</button>
+                    </div>
+
+                    <div id="format-yaml" class="format-content">
+                        <h3>YAML Format Example</h3>
+                        <pre><code>- name: Alice Johnson
+  notification_type: email
+  contact_info:
+    - alice@example.com
+  exclusions:
+    - Bob Smith
+- name: Bob Smith
+  notification_type: email
+  contact_info:
+    - bob@example.com
+  exclusions:
+    - Alice Johnson</code></pre>
+                        <button class="btn btn-secondary download-template" data-format="yaml">Download YAML Template</button>
+                    </div>
+
+                    <div id="format-csv" class="format-content">
+                        <h3>CSV Format Example</h3>
+                        <pre><code>name,notification_type,contact_info,exclusions
+Alice Johnson,email,alice@example.com,Bob Smith
+Bob Smith,email,bob@example.com,Alice Johnson
+Carol Davis,slack,@carol,
+David Wilson,email,david@example.com; david.alt@example.com,Carol Davis</code></pre>
+                        <p class="format-note">💡 Use semicolons to separate multiple emails or exclusions within a cell</p>
+                        <button class="btn btn-secondary download-template" data-format="csv">Download CSV Template</button>
+                    </div>
+
+                    <div id="format-tsv" class="format-content">
+                        <h3>TSV Format Example</h3>
+                        <pre><code>name	notification_type	contact_info	exclusions
+Alice Johnson	email	alice@example.com	Bob Smith
+Bob Smith	email	bob@example.com	Alice Johnson
+Carol Davis	slack	@carol
+David Wilson	email	david@example.com; david.alt@example.com	Carol Davis</code></pre>
+                        <p class="format-note">💡 Tab-separated format, great for Excel. Use semicolons for multiple values.</p>
+                        <button class="btn btn-secondary download-template" data-format="tsv">Download TSV Template</button>
+                    </div>
+
+                    <div id="format-toml" class="format-content">
+                        <h3>TOML Format Example</h3>
+                        <pre><code>[[participants]]
+name = "Alice Johnson"
+notification_type = "email"
+contact_info = ["alice@example.com"]
+exclusions = ["Bob Smith"]
+
+[[participants]]
+name = "Bob Smith"
+notification_type = "email"
+contact_info = ["bob@example.com"]
+exclusions = ["Alice Johnson"]</code></pre>
+                        <button class="btn btn-secondary download-template" data-format="toml">Download TOML Template</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Draw Tab -->
+            <div id="draw-tab" class="tab-content">
+                <h2>Run Secret Santa Draw</h2>
+
+                <div class="draw-section">
+                    <div class="summary-box">
+                        <h3>Current Configuration</h3>
+                        <p><strong>Total Participants:</strong> <span id="draw-participant-count">0</span></p>
+                        <p id="validation-status"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="archive-email">Archive Email (Optional)</label>
+                        <input type="email" id="archive-email" name="archive_email"
+                               placeholder="archive@example.com">
+                        <small>BCC all assignments to this email for record-keeping</small>
+                    </div>
+
+                    <button id="run-draw-btn" class="btn btn-primary btn-large" disabled>
+                        Run Draw
+                    </button>
+                </div>
+
+                <div id="results-section" class="results-section" style="display: none;">
+                    <h3>🎉 Draw Complete!</h3>
+                    <div id="results-container"></div>
+                    <div class="actions">
+                        <button id="export-btn" class="btn btn-secondary">Export Results</button>
+                        <button id="new-draw-btn" class="btn btn-primary">New Draw</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Validation Results Modal -->
+            <div id="validation-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Validation Results</h2>
+                    <div id="validation-results"></div>
+                </div>
+            </div>
+
+            <!-- Notification Toast -->
+            <div id="toast" class="toast"></div>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <p>Built with ❤️ for your holiday gift exchanges</p>
+                <div id="notification-status" class="notification-status">
+                    <span class="status-label">Available notifications:</span>
+                    <span id="notification-types" class="status-types">
+                        <span class="status-loading">Checking...</span>
+                    </span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
