@@ -15,7 +15,7 @@ The application looks for `secretsanta.config` in these locations (in order):
 3. `./secretsanta.config` (current working directory)
 4. `<binary-directory>/secretsanta.config` (same directory as the executable)
 
-**Note:** The file has no extension but uses TOML format internally.
+**Note:** The file has no extension but uses YAML format internally.
 
 ## Example Configs
 
@@ -32,14 +32,14 @@ Just run the application - notifications will be printed to console (stdout).
 
 Create `secretsanta.config`:
 
-```toml
-[smtp]
-host = "smtp.gmail.com"
-port = "587"
-username = "your-email@gmail.com"
-password = "your-app-password"  # Generate at https://myaccount.google.com/apppasswords
-from_address = "your-email@gmail.com"
-from_name = "Secret Santa"
+```yaml
+smtp:
+  host: "smtp.gmail.com"
+  port: "587"
+  username: "your-email@gmail.com"
+  password: "your-app-password"  # Generate at https://myaccount.google.com/apppasswords
+  from_address: "your-email@gmail.com"
+  from_name: "Secret Santa"
 ```
 
 **Important for Gmail users:**
@@ -49,41 +49,41 @@ from_name = "Secret Santa"
 
 ### Example 2: Generic SMTP Server
 
-```toml
-[smtp]
-host = "smtp.example.com"
-port = "587"
-username = "notifications@example.com"
-password = "your-smtp-password"
-from_address = "notifications@example.com"
-from_name = "Holiday Gift Exchange"
+```yaml
+smtp:
+  host: "smtp.example.com"
+  port: "587"
+  username: "notifications@example.com"
+  password: "your-smtp-password"
+  from_address: "notifications@example.com"
+  from_name: "Holiday Gift Exchange"
 ```
 
 ### Example 3: External Notifier Service
 
 For advanced setups with multiple notification types (Slack, Ntfy, etc.):
 
-```toml
-[notifier]
-service_addr = "localhost:50051"
-archive_email = "archive@example.com"  # Optional: BCC all notifications
+```yaml
+notifier:
+  service_addr: "localhost:50051"
+  archive_email: "archive@example.com"  # Optional: BCC all notifications
 ```
 
 See the [notifier service documentation](https://github.com/igodwin/notifier) for setup.
 
 ### Example 4: SMTP with Archiving
 
-```toml
-[smtp]
-host = "smtp.gmail.com"
-port = "587"
-username = "santa@example.com"
-password = "your-app-password"
-from_address = "santa@example.com"
-from_name = "Secret Santa"
+```yaml
+smtp:
+  host: "smtp.gmail.com"
+  port: "587"
+  username: "santa@example.com"
+  password: "your-app-password"
+  from_address: "santa@example.com"
+  from_name: "Secret Santa"
 
-[notifier]
-archive_email = "archive@example.com"  # BCC all emails to this address
+notifier:
+  archive_email: "archive@example.com"  # BCC all emails to this address
 ```
 
 ## Configuration Reference
@@ -120,7 +120,7 @@ After creating your config file:
 
 2. Check the logs for:
    ```
-   Loaded config from: /path/to/secretsanta.config.toml
+   Loaded config from: /path/to/secretsanta.config
    ```
 
 3. Open http://localhost:8080 in your browser

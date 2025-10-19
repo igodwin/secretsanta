@@ -1,6 +1,6 @@
-BINARY_NAME = secretsanta
+BINARY_NAME = secretsanta-web
 BUILD_DIR = bin
-CONFIG_FILE = configs/secretsanta.config.template
+CONFIG_FILE = configs/config.yaml
 IMG_TAG ?= latest
 DOCKER_COMPOSE = docker-compose
 GO_VERSION = 1.24
@@ -12,9 +12,12 @@ REGISTRY ?=
 IMAGE_NAME ?= $(REGISTRY)secretsanta
 
 # Build metadata
-BUILD_DATE := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+BUILD_DATE := $(shell date -u +"%Y-%m-%d_%H:%M:%S_UTC")
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 VCS_REF := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+
+# Build flags
+LDFLAGS := -X 'main.Version=$(VERSION)' -X 'main.GitCommit=$(VCS_REF)' -X 'main.BuildTime=$(BUILD_DATE)'
 
 ifeq ($(OS),Windows_NT)
 	BINARY_NAME := $(BINARY_NAME).exe
@@ -27,22 +30,14 @@ all: build copy-config
 
 # Build targets
 build:
-	@echo "Building the CLI..."
-	@mkdir -p $(BUILD_DIR)
-	go build -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/cli
-
-build-web:
 	@echo "Building the web server..."
 	@mkdir -p $(BUILD_DIR)
-	go build -o $(BUILD_DIR)/secretsanta-web ./cmd/web
-
-build-all: build build-web
+	go build -ldflags="$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/web
 
 build-linux:
 	@echo "Building for Linux..."
 	@mkdir -p $(BUILD_DIR)
-	GOOS=linux GOARCH=amd64 go build -o $(BUILD_DIR)/$(BINARY_NAME)-linux ./cmd/cli
-	GOOS=linux GOARCH=amd64 go build -o $(BUILD_DIR)/secretsanta-web-linux ./cmd/web
+	GOOS=linux GOARCH=amd64 go build -ldflags="$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY_NAME)-linux ./cmd/web
 
 run-web:
 	@echo "Starting web server..."
@@ -55,7 +50,7 @@ copy-config:
 
 # Docker targets
 docker-build:
-	@echo "Building Docker image..."
+	@echo "Building Docker image for web server..."
 	docker build -t secretsanta:$(IMG_TAG) \
 		--build-arg BUILD_DATE="$(BUILD_DATE)" \
 		--build-arg VERSION="$(VERSION)" \
@@ -176,13 +171,11 @@ clean-docker:
 # Help target
 help:
 	@echo "Available targets:"
-	@echo "  build              - Build the CLI binary"
-	@echo "  build-web          - Build the web server"
-	@echo "  build-all          - Build both CLI and web server"
+	@echo "  build              - Build the web server binary"
 	@echo "  build-linux        - Build for Linux (cross-compile)"
 	@echo "  run-web            - Run web server in development mode"
 	@echo "  copy-config        - Copy config template to build directory"
-	@echo "  docker-build       - Build Docker image for secretsanta"
+	@echo "  docker-build       - Build Docker image for web server"
 	@echo "  docker-build-notifier - Build notifier service Docker image"
 	@echo "  docker-buildx-build - Build multi-architecture images"
 	@echo "  compose-up         - Start notifier service only"
@@ -200,7 +193,7 @@ help:
 	@echo "  clean-docker       - Clean Docker containers and images"
 	@echo "  help               - Show this help message"
 
-.PHONY: all build build-web build-all build-linux run-web copy-config docker-build docker-build-notifier \
+.PHONY: all build build-linux run-web copy-config docker-build docker-build-notifier \
         docker-buildx-setup docker-buildx-build docker-buildx-build-local docker-buildx-inspect docker-buildx-cleanup \
         compose-up compose-up-dev compose-run compose-down compose-logs compose-logs-notifier \
         test test-coverage lint format mod-tidy clean clean-docker help

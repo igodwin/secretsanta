@@ -82,19 +82,19 @@ make run-web
 
 ## Configuration
 
-### Application Config (`secretsanta.config.toml`)
-```toml
-[smtp]
-host = "smtp.example.com"
-port = "587"
-username = "your-email@example.com"
-password = "YOUR_PASSWORD"
-from_address = "your-email@example.com"
-from_name = "Secret Santa"
+### Application Config (`secretsanta.config`)
+```yaml
+smtp:
+  host: "smtp.example.com"
+  port: "587"
+  username: "your-email@example.com"
+  password: "YOUR_PASSWORD"
+  from_address: "your-email@example.com"
+  from_name: "Secret Santa"
 
-[notifier]
-service_addr = "localhost:50051"  # Optional: external notifier service
-archive_email = "archive@example.com"  # Optional: BCC for all notifications
+notifier:
+  service_addr: "localhost:50051"  # Optional: external notifier service
+  archive_email: "archive@example.com"  # Optional: BCC for all notifications
 ```
 
 ### Participant Data Format

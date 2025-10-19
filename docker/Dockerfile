@@ -18,6 +18,11 @@ ARG TARGETOS
 ARG TARGETARCH
 ARG TARGETVARIANT
 
+# Build arguments for metadata
+ARG VERSION=dev
+ARG BUILD_DATE=unknown
+ARG VCS_REF=unknown
+
 WORKDIR /app
 
 # Install dependencies
@@ -30,15 +35,15 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Build the application for target architecture
+# Build the web server for target architecture with version info
 RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} GOARM=${TARGETVARIANT#v} \
-    go build -ldflags='-w -s -extldflags "-static"' \
+    go build -ldflags="-w -s -extldflags '-static' -X 'main.Version=${VERSION}' -X 'main.GitCommit=${VCS_REF}' -X 'main.BuildTime=${BUILD_DATE}'" \
     -a -installsuffix cgo \
-    -o secretsanta \
-    ./cmd/cli
+    -o secretsanta-web \
+    ./cmd/web
 
 # Final stage
-FROM --platform=$TARGETPLATFORM alpine:latest AS production
+FROM alpine:latest AS production
 
 # Build arguments for metadata
 ARG TARGETOS
@@ -57,10 +62,13 @@ RUN addgroup -g 1001 -S secretsanta && \
 WORKDIR /app
 
 # Copy binary from builder stage
-COPY --from=builder /app/secretsanta .
+COPY --from=builder /app/secretsanta-web .
+
+# Copy static web assets
+COPY --from=builder /app/internal/web/static ./internal/web/static
 
 # Copy config template
-COPY --from=builder /app/configs/secretsanta.config.template ./config.template
+COPY --from=builder /app/configs/config.yaml ./config.template
 
 # Change ownership to non-root user
 RUN chown -R secretsanta:secretsanta /app
@@ -68,20 +76,23 @@ RUN chown -R secretsanta:secretsanta /app
 # Switch to non-root user
 USER secretsanta
 
+# Expose web server port
+EXPOSE 8080
+
 # Default command
-ENTRYPOINT ["./secretsanta"]
-CMD ["participants.json"]
+ENTRYPOINT ["./secretsanta-web"]
+CMD ["-addr", ":8080"]
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD pgrep secretsanta || exit 1
+    CMD wget --quiet --tries=1 --spider http://localhost:8080/ || exit 1
 
 # Metadata with build info
 LABEL maintainer="igodwin" \
-      description="Secret Santa application with gRPC notifier integration" \
+      description="Secret Santa web application with gRPC notifier integration" \
       version="${VERSION:-1.0.0}" \
-      org.opencontainers.image.title="Secret Santa" \
-      org.opencontainers.image.description="Secret Santa gift exchange application with gRPC notifier integration" \
+      org.opencontainers.image.title="Secret Santa Web" \
+      org.opencontainers.image.description="Secret Santa web server with REST API and UI" \
       org.opencontainers.image.authors="igodwin" \
       org.opencontainers.image.vendor="igodwin" \
       org.opencontainers.image.version="${VERSION:-1.0.0}" \

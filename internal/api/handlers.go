@@ -345,14 +345,14 @@ func (s *Server) HandleStatus(w http.ResponseWriter, r *http.Request) {
 
 // checkNotifierHealth queries the notifier service health endpoint
 func checkNotifierHealth(serviceAddr string) ([]string, bool, string, map[string]string) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	conn, err := grpc.DialContext(ctx, serviceAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithBlock())
 	if err != nil {
-		return nil, false, "unreachable", nil
+		return nil, false, "unreachable", map[string]string{"error": err.Error()}
 	}
 	defer conn.Close()
 
@@ -360,7 +360,8 @@ func checkNotifierHealth(serviceAddr string) ([]string, bool, string, map[string
 
 	healthResp, err := client.HealthCheck(ctx, &pb.HealthCheckRequest{})
 	if err != nil {
-		return nil, false, "error", nil
+		log.Printf("Notifier health check failed: %v", err)
+		return nil, false, "error", map[string]string{"grpc_error": err.Error()}
 	}
 
 	// Extract available notification types from components

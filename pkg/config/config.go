@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 	"path/filepath"
@@ -12,7 +13,7 @@ import (
 var (
 	configInstance *Config
 	once           sync.Once
-	Paths          = []string{"/etc/secretsanta/", "$HOME/.secretsanta", ".", getBinaryDir()}
+	Paths          = []string{getBinaryDir(), ".", "$HOME/.secretsanta", "/etc/secretsanta/"}
 )
 
 // getBinaryDir returns the directory containing the running binary
@@ -65,9 +66,9 @@ func loadConfig() *Config {
 
 	viper.AutomaticEnv()
 
-	// Try to find config file with name "secretsanta.config" (no extension)
-	viper.SetConfigName("secretsanta.config")
-	viper.SetConfigType("toml")
+	// Try to find config file named "config.yaml"
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
 
 	for _, path := range Paths {
 		viper.AddConfigPath(path)
@@ -91,5 +92,45 @@ func loadConfig() *Config {
 		log.Fatalf("unable to decode into struct: %v", err)
 	}
 
+	// Log the loaded configuration
+	logConfig(config, viper.ConfigFileUsed())
+
 	return config
+}
+
+// redact returns a redacted version of the string for logging
+func redact(s string) string {
+	if s == "" {
+		return ""
+	}
+	return "***REDACTED***"
+}
+
+// logConfig logs the configuration in a structured format with sensitive fields redacted
+func logConfig(cfg *Config, configFile string) {
+	// Create a redacted version of the config for logging
+	redactedConfig := map[string]interface{}{
+		"config_file": configFile,
+		"smtp": map[string]interface{}{
+			"host":         cfg.SMTP.Host,
+			"port":         cfg.SMTP.Port,
+			"username":     cfg.SMTP.Username,
+			"password":     redact(cfg.SMTP.Password),
+			"from_address": cfg.SMTP.FromAddress,
+			"from_name":    cfg.SMTP.FromName,
+			"identity":     cfg.SMTP.Identity,
+		},
+		"notifier": map[string]interface{}{
+			"service_addr":  cfg.Notifier.ServiceAddr,
+			"archive_email": cfg.Notifier.ArchiveEmail,
+		},
+	}
+
+	jsonBytes, err := json.MarshalIndent(redactedConfig, "", "  ")
+	if err != nil {
+		log.Printf("Failed to marshal config for logging: %v", err)
+		return
+	}
+
+	log.Printf("Configuration:\n%s", string(jsonBytes))
 }

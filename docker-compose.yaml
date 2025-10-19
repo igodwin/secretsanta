@@ -13,7 +13,7 @@ services:
       - GRPC_PORT=50051
       - HTTP_PORT=8080
     volumes:
-      - ./configs/notifier-config.yaml:/app/config.yaml:ro
+      - ./configs/notifier.yaml:/app/config.yaml:ro
     healthcheck:
       test: ["CMD", "grpc_health_probe", "-addr=localhost:50051"]
       interval: 30s
@@ -24,25 +24,22 @@ services:
     networks:
       - secretsanta-network
 
-  # Secret Santa application
-  secretsanta:
+  # Secret Santa web server
+  secretsanta-web:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    container_name: secretsanta-app
-    environment:
-      - NOTIFIER_SERVICE_ADDR=notifier:50051
-      - CONFIG_PATH=/app/participants.json
+    container_name: secretsanta-web
+    ports:
+      - "8081:8080"  # Web UI and API
     volumes:
-      - ./configs/secretsanta.config.toml:/app/config.toml:ro
-      - ./participants.json:/app/participants.json:ro
+      - ./configs/config.yaml:/app/config.yaml:ro
     depends_on:
       notifier:
         condition: service_healthy
+    restart: unless-stopped
     networks:
       - secretsanta-network
-    profiles:
-      - run  # Only start when explicitly requested
 
   # Development environment with both services
   dev:

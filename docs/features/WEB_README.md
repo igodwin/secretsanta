@@ -309,10 +309,10 @@ make test-coverage
 The web application can integrate with the external notifier service for sending notifications:
 
 1. Set the notifier service address in config:
-   ```toml
-   [notifier]
-   service_addr = "localhost:50051"
-   archive_email = "archive@example.com"
+   ```yaml
+   notifier:
+     service_addr: "localhost:50051"
+     archive_email: "archive@example.com"
    ```
 
 2. When drawing, notifications will be sent via the notifier service
