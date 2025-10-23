@@ -11,6 +11,7 @@ import (
 
 	"github.com/igodwin/secretsanta/internal/draw"
 	"github.com/igodwin/secretsanta/internal/formats"
+	"github.com/igodwin/secretsanta/internal/notification"
 	"github.com/igodwin/secretsanta/pkg/config"
 	"github.com/igodwin/secretsanta/pkg/participant"
 	"google.golang.org/grpc"
@@ -138,11 +139,20 @@ func (s *Server) HandleDraw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// If archive email is provided and notifier integration is available, use it
+	// Send notifications
+	cfg := config.GetConfig()
+
+	// Set archive email from request if provided
 	if drawRequest.ArchiveEmail != "" {
 		log.Printf("Draw completed with archive email: %s", drawRequest.ArchiveEmail)
-		// Archive email will be used by notification system
-		// Store it for future notification sending
+		cfg.Notifier.ArchiveEmail = drawRequest.ArchiveEmail
+	}
+
+	// Send notifications using the notification service
+	if err := notification.Send(result, cfg); err != nil {
+		log.Printf("Failed to send notifications: %v", err)
+		// Don't fail the entire draw if notifications fail
+		// The user still gets the results in the response
 	}
 
 	// Convert to response format
@@ -291,14 +301,21 @@ func (s *Server) HandleTemplate(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
+// NotifierTypeInfo contains information about a specific notification type
+type NotifierTypeInfo struct {
+	Type           string   `json:"type"`
+	Accounts       []string `json:"accounts,omitempty"`
+	DefaultAccount string   `json:"default_account,omitempty"`
+}
+
 // NotificationStatusResponse contains information about available notification types
 type NotificationStatusResponse struct {
-	Available        []string          `json:"available"`
-	UsingNotifier    bool              `json:"using_notifier"`
-	NotifierHealthy  bool              `json:"notifier_healthy,omitempty"`
-	NotifierStatus   string            `json:"notifier_status,omitempty"`
-	NotifierDetails  map[string]string `json:"notifier_details,omitempty"`
-	SMTPConfigured   bool              `json:"smtp_configured"`
+	Available       []NotifierTypeInfo `json:"available"`
+	UsingNotifier   bool               `json:"using_notifier"`
+	NotifierHealthy bool               `json:"notifier_healthy,omitempty"`
+	NotifierStatus  string             `json:"notifier_status,omitempty"`
+	NotifierDetails map[string]string  `json:"notifier_details,omitempty"`
+	SMTPConfigured  bool               `json:"smtp_configured"`
 }
 
 // HandleStatus returns the current notification configuration status
@@ -310,13 +327,7 @@ func (s *Server) HandleStatus(w http.ResponseWriter, r *http.Request) {
 
 	cfg := config.GetConfig()
 	response := NotificationStatusResponse{
-		Available: []string{"stdout"}, // stdout always available
-	}
-
-	// Check if SMTP is configured
-	if cfg.SMTP.Host != "" && cfg.SMTP.FromAddress != "" {
-		response.Available = append(response.Available, "email")
-		response.SMTPConfigured = true
+		Available: []NotifierTypeInfo{{Type: "stdout"}}, // stdout always available
 	}
 
 	// Check if external notifier service is configured
@@ -324,7 +335,7 @@ func (s *Server) HandleStatus(w http.ResponseWriter, r *http.Request) {
 		response.UsingNotifier = true
 
 		// Try to query the notifier service for available types
-		notifierTypes, healthy, status, details := checkNotifierHealth(cfg.Notifier.ServiceAddr)
+		notifierTypes, healthy, status, details := getNotifierInfo(cfg.Notifier.ServiceAddr)
 		response.NotifierHealthy = healthy
 		response.NotifierStatus = status
 		response.NotifierDetails = details
@@ -333,18 +344,28 @@ func (s *Server) HandleStatus(w http.ResponseWriter, r *http.Request) {
 			// Use types from notifier service
 			response.Available = notifierTypes
 		} else if healthy {
-			// Notifier is healthy but didn't report types, assume standard types
-			response.Available = []string{"email", "slack", "stdout"}
+			// Notifier is healthy but didn't report types, use defaults
+			response.Available = []NotifierTypeInfo{
+				{Type: "email"},
+				{Type: "slack"},
+				{Type: "stdout"},
+			}
 		}
 		// If notifier is not healthy, keep the basic types we detected
+	} else {
+		// Fallback: Check if SMTP is configured locally
+		if cfg.SMTP.Host != "" && cfg.SMTP.FromAddress != "" {
+			response.Available = append(response.Available, NotifierTypeInfo{Type: "email"})
+			response.SMTPConfigured = true
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
 
-// checkNotifierHealth queries the notifier service health endpoint
-func checkNotifierHealth(serviceAddr string) ([]string, bool, string, map[string]string) {
+// getNotifierInfo queries the notifier service for available notification types
+func getNotifierInfo(serviceAddr string) ([]NotifierTypeInfo, bool, string, map[string]string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -358,43 +379,52 @@ func checkNotifierHealth(serviceAddr string) ([]string, bool, string, map[string
 
 	client := pb.NewNotifierServiceClient(conn)
 
+	// First check health
 	healthResp, err := client.HealthCheck(ctx, &pb.HealthCheckRequest{})
 	if err != nil {
 		log.Printf("Notifier health check failed: %v", err)
 		return nil, false, "error", map[string]string{"grpc_error": err.Error()}
 	}
 
-	// Extract available notification types from components
-	var types []string
-	if healthResp.Components != nil {
-		// Check for configured providers in the components map
-		// Common keys might be "email", "slack", "ntfy", etc.
-		for key := range healthResp.Components {
-			switch key {
-			case "email", "smtp":
-				types = appendUnique(types, "email")
-			case "slack":
-				types = appendUnique(types, "slack")
-			case "ntfy":
-				types = appendUnique(types, "ntfy")
-			}
+	// Then get available notifiers
+	notifiersResp, err := client.GetNotifiers(ctx, &pb.GetNotifiersRequest{})
+	if err != nil {
+		log.Printf("GetNotifiers failed: %v", err)
+		// Return health info but no notifiers
+		return nil, healthResp.Healthy, healthResp.Status, healthResp.Components
+	}
+
+	// Convert proto NotifierInfo to API NotifierTypeInfo
+	var notifierTypes []NotifierTypeInfo
+	for _, n := range notifiersResp.Notifiers {
+		// Convert the enum to lowercase string
+		typeStr := convertNotifierTypeEnum(n.Type)
+		if typeStr != "" {
+			notifierTypes = append(notifierTypes, NotifierTypeInfo{
+				Type:           typeStr,
+				Accounts:       n.Accounts,
+				DefaultAccount: n.DefaultAccount,
+			})
 		}
 	}
 
-	// Always add stdout as it's always available
-	types = appendUnique(types, "stdout")
-
-	return types, healthResp.Healthy, healthResp.Status, healthResp.Components
+	return notifierTypes, healthResp.Healthy, healthResp.Status, healthResp.Components
 }
 
-// appendUnique appends a string to a slice only if it's not already present
-func appendUnique(slice []string, item string) []string {
-	for _, existing := range slice {
-		if existing == item {
-			return slice
-		}
+// convertNotifierTypeEnum converts a NotificationType enum to lowercase format
+func convertNotifierTypeEnum(notifType pb.NotificationType) string {
+	switch notifType {
+	case pb.NotificationType_NOTIFICATION_TYPE_EMAIL:
+		return "email"
+	case pb.NotificationType_NOTIFICATION_TYPE_SLACK:
+		return "slack"
+	case pb.NotificationType_NOTIFICATION_TYPE_NTFY:
+		return "ntfy"
+	case pb.NotificationType_NOTIFICATION_TYPE_STDOUT:
+		return "stdout"
+	default:
+		return ""
 	}
-	return append(slice, item)
 }
 
 // Start starts the HTTP server

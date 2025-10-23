@@ -11,13 +11,11 @@ BUILDER_NAME ?= secretsanta-builder
 REGISTRY ?= 
 IMAGE_NAME ?= $(REGISTRY)secretsanta
 
-# Build metadata
-BUILD_DATE := $(shell date -u +"%Y-%m-%d_%H:%M:%S_UTC")
-VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
-VCS_REF := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-
-# Build flags
-LDFLAGS := -X 'main.Version=$(VERSION)' -X 'main.GitCommit=$(VCS_REF)' -X 'main.BuildTime=$(BUILD_DATE)'
+# Build information
+VERSION ?= dev
+GIT_COMMIT := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+BUILD_TIME := $(shell date -u '+%Y-%m-%d_%H:%M:%S_UTC')
+LDFLAGS := -X main.Version=$(VERSION) -X main.GitCommit=$(GIT_COMMIT) -X main.BuildTime=$(BUILD_TIME)
 
 ifeq ($(OS),Windows_NT)
 	BINARY_NAME := $(BINARY_NAME).exe
@@ -52,9 +50,9 @@ copy-config:
 docker-build:
 	@echo "Building Docker image for web server..."
 	docker build -t secretsanta:$(IMG_TAG) \
-		--build-arg BUILD_DATE="$(BUILD_DATE)" \
+		--build-arg BUILD_TIME="$(BUILD_TIME)" \
 		--build-arg VERSION="$(VERSION)" \
-		--build-arg VCS_REF="$(VCS_REF)" \
+		--build-arg GIT_COMMIT="$(GIT_COMMIT)" \
 		-f docker/Dockerfile .
 
 docker-build-notifier:
@@ -77,9 +75,9 @@ docker-buildx-build: docker-buildx-setup
 	@echo "Building multi-architecture Docker image for platforms: $(PLATFORMS)"
 	docker buildx build \
 		--platform $(PLATFORMS) \
-		--build-arg BUILD_DATE="$(BUILD_DATE)" \
+		--build-arg BUILD_TIME="$(BUILD_TIME))" \
 		--build-arg VERSION="$(VERSION)" \
-		--build-arg VCS_REF="$(VCS_REF)" \
+		--build-arg GIT_COMMIT="$(GIT_COMMIT)" \
 		-t $(IMAGE_NAME):$(IMG_TAG) \
 		-t $(IMAGE_NAME):latest \
 		-f docker/Dockerfile \
@@ -90,9 +88,9 @@ docker-buildx-build-local: docker-buildx-setup
 	@echo "Building multi-architecture Docker image locally (no push)"
 	docker buildx build \
 		--platform $(PLATFORMS) \
-		--build-arg BUILD_DATE="$(BUILD_DATE)" \
+		--build-arg BUILD_TIME="$(BUILD_TIME)" \
 		--build-arg VERSION="$(VERSION)" \
-		--build-arg VCS_REF="$(VCS_REF)" \
+		--build-arg GIT_COMMIT="$(GIT_COMMIT)" \
 		-t $(IMAGE_NAME):$(IMG_TAG) \
 		-t $(IMAGE_NAME):latest \
 		-f docker/Dockerfile \

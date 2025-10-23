@@ -657,6 +657,41 @@ footer {
     color: #721c24;
 }
 
+/* Papa Elf Warning */
+.papa-elf-warning {
+    background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
+    border: 3px solid var(--warning-color);
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(255, 193, 7, 0.3);
+}
+
+.elf-message {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.elf-message h3 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-warning {
+    background: var(--warning-color);
+    color: #333;
+    font-weight: bold;
+    border: 2px solid #f9a825;
+}
+
+.btn-warning:hover:not(:disabled) {
+    background: #f9a825;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .form-row {
@@ -674,5 +709,9 @@ footer {
 
     .result-card .arrow {
         transform: rotate(90deg);
+    }
+
+    .elf-message h3 {
+        font-size: 1.4rem;
     }
 }

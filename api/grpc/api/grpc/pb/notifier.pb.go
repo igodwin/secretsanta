@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.10
 // 	protoc        v6.33.0
-// source: api/grpc/notifier.proto
+// source: notifier.proto
 
 package pb
 
@@ -62,11 +62,11 @@ func (x NotificationType) String() string {
 }
 
 func (NotificationType) Descriptor() protoreflect.EnumDescriptor {
-	return file_api_grpc_notifier_proto_enumTypes[0].Descriptor()
+	return file_notifier_proto_enumTypes[0].Descriptor()
 }
 
 func (NotificationType) Type() protoreflect.EnumType {
-	return &file_api_grpc_notifier_proto_enumTypes[0]
+	return &file_notifier_proto_enumTypes[0]
 }
 
 func (x NotificationType) Number() protoreflect.EnumNumber {
@@ -75,7 +75,7 @@ func (x NotificationType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NotificationType.Descriptor instead.
 func (NotificationType) EnumDescriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{0}
+	return file_notifier_proto_rawDescGZIP(), []int{0}
 }
 
 // Priority defines the urgency level
@@ -118,11 +118,11 @@ func (x Priority) String() string {
 }
 
 func (Priority) Descriptor() protoreflect.EnumDescriptor {
-	return file_api_grpc_notifier_proto_enumTypes[1].Descriptor()
+	return file_notifier_proto_enumTypes[1].Descriptor()
 }
 
 func (Priority) Type() protoreflect.EnumType {
-	return &file_api_grpc_notifier_proto_enumTypes[1]
+	return &file_notifier_proto_enumTypes[1]
 }
 
 func (x Priority) Number() protoreflect.EnumNumber {
@@ -131,7 +131,7 @@ func (x Priority) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Priority.Descriptor instead.
 func (Priority) EnumDescriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{1}
+	return file_notifier_proto_rawDescGZIP(), []int{1}
 }
 
 // NotificationStatus represents the state of a notification
@@ -180,11 +180,11 @@ func (x NotificationStatus) String() string {
 }
 
 func (NotificationStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_api_grpc_notifier_proto_enumTypes[2].Descriptor()
+	return file_notifier_proto_enumTypes[2].Descriptor()
 }
 
 func (NotificationStatus) Type() protoreflect.EnumType {
-	return &file_api_grpc_notifier_proto_enumTypes[2]
+	return &file_notifier_proto_enumTypes[2]
 }
 
 func (x NotificationStatus) Number() protoreflect.EnumNumber {
@@ -193,7 +193,7 @@ func (x NotificationStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NotificationStatus.Descriptor instead.
 func (NotificationStatus) EnumDescriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{2}
+	return file_notifier_proto_rawDescGZIP(), []int{2}
 }
 
 // Notification represents a notification message
@@ -220,7 +220,7 @@ type Notification struct {
 
 func (x *Notification) Reset() {
 	*x = Notification{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[0]
+	mi := &file_notifier_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -232,7 +232,7 @@ func (x *Notification) String() string {
 func (*Notification) ProtoMessage() {}
 
 func (x *Notification) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[0]
+	mi := &file_notifier_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -245,7 +245,7 @@ func (x *Notification) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Notification.ProtoReflect.Descriptor instead.
 func (*Notification) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{0}
+	return file_notifier_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Notification) GetId() string {
@@ -368,7 +368,7 @@ type NotificationResult struct {
 
 func (x *NotificationResult) Reset() {
 	*x = NotificationResult{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[1]
+	mi := &file_notifier_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -380,7 +380,7 @@ func (x *NotificationResult) String() string {
 func (*NotificationResult) ProtoMessage() {}
 
 func (x *NotificationResult) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[1]
+	mi := &file_notifier_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -393,7 +393,7 @@ func (x *NotificationResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotificationResult.ProtoReflect.Descriptor instead.
 func (*NotificationResult) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{1}
+	return file_notifier_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *NotificationResult) GetNotificationId() string {
@@ -450,15 +450,13 @@ type SendNotificationRequest struct {
 	Metadata      map[string]string      `protobuf:"bytes,7,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	ScheduledFor  *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=scheduled_for,json=scheduledFor,proto3" json:"scheduled_for,omitempty"`
 	MaxRetries    int32                  `protobuf:"varint,9,opt,name=max_retries,json=maxRetries,proto3" json:"max_retries,omitempty"`
-	Cc            []string               `protobuf:"bytes,10,rep,name=cc,proto3" json:"cc,omitempty"`   // CC recipients for email notifications
-	Bcc           []string               `protobuf:"bytes,11,rep,name=bcc,proto3" json:"bcc,omitempty"` // BCC recipients for email notifications
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SendNotificationRequest) Reset() {
 	*x = SendNotificationRequest{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[2]
+	mi := &file_notifier_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -470,7 +468,7 @@ func (x *SendNotificationRequest) String() string {
 func (*SendNotificationRequest) ProtoMessage() {}
 
 func (x *SendNotificationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[2]
+	mi := &file_notifier_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -483,7 +481,7 @@ func (x *SendNotificationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendNotificationRequest.ProtoReflect.Descriptor instead.
 func (*SendNotificationRequest) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{2}
+	return file_notifier_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *SendNotificationRequest) GetType() NotificationType {
@@ -549,20 +547,6 @@ func (x *SendNotificationRequest) GetMaxRetries() int32 {
 	return 0
 }
 
-func (x *SendNotificationRequest) GetCc() []string {
-	if x != nil {
-		return x.Cc
-	}
-	return nil
-}
-
-func (x *SendNotificationRequest) GetBcc() []string {
-	if x != nil {
-		return x.Bcc
-	}
-	return nil
-}
-
 // SendNotificationResponse returns the result of sending a notification
 type SendNotificationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -573,7 +557,7 @@ type SendNotificationResponse struct {
 
 func (x *SendNotificationResponse) Reset() {
 	*x = SendNotificationResponse{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[3]
+	mi := &file_notifier_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -585,7 +569,7 @@ func (x *SendNotificationResponse) String() string {
 func (*SendNotificationResponse) ProtoMessage() {}
 
 func (x *SendNotificationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[3]
+	mi := &file_notifier_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -598,7 +582,7 @@ func (x *SendNotificationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendNotificationResponse.ProtoReflect.Descriptor instead.
 func (*SendNotificationResponse) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{3}
+	return file_notifier_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *SendNotificationResponse) GetResult() *NotificationResult {
@@ -618,7 +602,7 @@ type SendBatchNotificationsRequest struct {
 
 func (x *SendBatchNotificationsRequest) Reset() {
 	*x = SendBatchNotificationsRequest{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[4]
+	mi := &file_notifier_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -630,7 +614,7 @@ func (x *SendBatchNotificationsRequest) String() string {
 func (*SendBatchNotificationsRequest) ProtoMessage() {}
 
 func (x *SendBatchNotificationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[4]
+	mi := &file_notifier_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -643,7 +627,7 @@ func (x *SendBatchNotificationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendBatchNotificationsRequest.ProtoReflect.Descriptor instead.
 func (*SendBatchNotificationsRequest) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{4}
+	return file_notifier_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *SendBatchNotificationsRequest) GetNotifications() []*SendNotificationRequest {
@@ -663,7 +647,7 @@ type SendBatchNotificationsResponse struct {
 
 func (x *SendBatchNotificationsResponse) Reset() {
 	*x = SendBatchNotificationsResponse{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[5]
+	mi := &file_notifier_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -675,7 +659,7 @@ func (x *SendBatchNotificationsResponse) String() string {
 func (*SendBatchNotificationsResponse) ProtoMessage() {}
 
 func (x *SendBatchNotificationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[5]
+	mi := &file_notifier_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -688,7 +672,7 @@ func (x *SendBatchNotificationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendBatchNotificationsResponse.ProtoReflect.Descriptor instead.
 func (*SendBatchNotificationsResponse) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{5}
+	return file_notifier_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *SendBatchNotificationsResponse) GetResults() []*NotificationResult {
@@ -708,7 +692,7 @@ type GetNotificationRequest struct {
 
 func (x *GetNotificationRequest) Reset() {
 	*x = GetNotificationRequest{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[6]
+	mi := &file_notifier_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -720,7 +704,7 @@ func (x *GetNotificationRequest) String() string {
 func (*GetNotificationRequest) ProtoMessage() {}
 
 func (x *GetNotificationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[6]
+	mi := &file_notifier_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -733,7 +717,7 @@ func (x *GetNotificationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNotificationRequest.ProtoReflect.Descriptor instead.
 func (*GetNotificationRequest) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{6}
+	return file_notifier_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetNotificationRequest) GetId() string {
@@ -753,7 +737,7 @@ type GetNotificationResponse struct {
 
 func (x *GetNotificationResponse) Reset() {
 	*x = GetNotificationResponse{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[7]
+	mi := &file_notifier_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -765,7 +749,7 @@ func (x *GetNotificationResponse) String() string {
 func (*GetNotificationResponse) ProtoMessage() {}
 
 func (x *GetNotificationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[7]
+	mi := &file_notifier_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -778,7 +762,7 @@ func (x *GetNotificationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNotificationResponse.ProtoReflect.Descriptor instead.
 func (*GetNotificationResponse) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{7}
+	return file_notifier_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetNotificationResponse) GetNotification() *Notification {
@@ -805,7 +789,7 @@ type NotificationFilter struct {
 
 func (x *NotificationFilter) Reset() {
 	*x = NotificationFilter{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[8]
+	mi := &file_notifier_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -817,7 +801,7 @@ func (x *NotificationFilter) String() string {
 func (*NotificationFilter) ProtoMessage() {}
 
 func (x *NotificationFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[8]
+	mi := &file_notifier_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -830,7 +814,7 @@ func (x *NotificationFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotificationFilter.ProtoReflect.Descriptor instead.
 func (*NotificationFilter) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{8}
+	return file_notifier_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *NotificationFilter) GetIds() []string {
@@ -899,7 +883,7 @@ type ListNotificationsRequest struct {
 
 func (x *ListNotificationsRequest) Reset() {
 	*x = ListNotificationsRequest{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[9]
+	mi := &file_notifier_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -911,7 +895,7 @@ func (x *ListNotificationsRequest) String() string {
 func (*ListNotificationsRequest) ProtoMessage() {}
 
 func (x *ListNotificationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[9]
+	mi := &file_notifier_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -924,7 +908,7 @@ func (x *ListNotificationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListNotificationsRequest.ProtoReflect.Descriptor instead.
 func (*ListNotificationsRequest) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{9}
+	return file_notifier_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ListNotificationsRequest) GetFilter() *NotificationFilter {
@@ -945,7 +929,7 @@ type ListNotificationsResponse struct {
 
 func (x *ListNotificationsResponse) Reset() {
 	*x = ListNotificationsResponse{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[10]
+	mi := &file_notifier_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -957,7 +941,7 @@ func (x *ListNotificationsResponse) String() string {
 func (*ListNotificationsResponse) ProtoMessage() {}
 
 func (x *ListNotificationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[10]
+	mi := &file_notifier_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -970,7 +954,7 @@ func (x *ListNotificationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListNotificationsResponse.ProtoReflect.Descriptor instead.
 func (*ListNotificationsResponse) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{10}
+	return file_notifier_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ListNotificationsResponse) GetNotifications() []*Notification {
@@ -997,7 +981,7 @@ type CancelNotificationRequest struct {
 
 func (x *CancelNotificationRequest) Reset() {
 	*x = CancelNotificationRequest{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[11]
+	mi := &file_notifier_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1009,7 +993,7 @@ func (x *CancelNotificationRequest) String() string {
 func (*CancelNotificationRequest) ProtoMessage() {}
 
 func (x *CancelNotificationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[11]
+	mi := &file_notifier_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1022,7 +1006,7 @@ func (x *CancelNotificationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelNotificationRequest.ProtoReflect.Descriptor instead.
 func (*CancelNotificationRequest) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{11}
+	return file_notifier_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *CancelNotificationRequest) GetId() string {
@@ -1043,7 +1027,7 @@ type CancelNotificationResponse struct {
 
 func (x *CancelNotificationResponse) Reset() {
 	*x = CancelNotificationResponse{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[12]
+	mi := &file_notifier_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1055,7 +1039,7 @@ func (x *CancelNotificationResponse) String() string {
 func (*CancelNotificationResponse) ProtoMessage() {}
 
 func (x *CancelNotificationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[12]
+	mi := &file_notifier_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1068,7 +1052,7 @@ func (x *CancelNotificationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelNotificationResponse.ProtoReflect.Descriptor instead.
 func (*CancelNotificationResponse) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{12}
+	return file_notifier_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *CancelNotificationResponse) GetSuccess() bool {
@@ -1095,7 +1079,7 @@ type RetryNotificationRequest struct {
 
 func (x *RetryNotificationRequest) Reset() {
 	*x = RetryNotificationRequest{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[13]
+	mi := &file_notifier_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1107,7 +1091,7 @@ func (x *RetryNotificationRequest) String() string {
 func (*RetryNotificationRequest) ProtoMessage() {}
 
 func (x *RetryNotificationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[13]
+	mi := &file_notifier_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1120,7 +1104,7 @@ func (x *RetryNotificationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RetryNotificationRequest.ProtoReflect.Descriptor instead.
 func (*RetryNotificationRequest) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{13}
+	return file_notifier_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *RetryNotificationRequest) GetId() string {
@@ -1140,7 +1124,7 @@ type RetryNotificationResponse struct {
 
 func (x *RetryNotificationResponse) Reset() {
 	*x = RetryNotificationResponse{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[14]
+	mi := &file_notifier_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1152,7 +1136,7 @@ func (x *RetryNotificationResponse) String() string {
 func (*RetryNotificationResponse) ProtoMessage() {}
 
 func (x *RetryNotificationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[14]
+	mi := &file_notifier_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1165,7 +1149,7 @@ func (x *RetryNotificationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RetryNotificationResponse.ProtoReflect.Descriptor instead.
 func (*RetryNotificationResponse) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{14}
+	return file_notifier_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *RetryNotificationResponse) GetResult() *NotificationResult {
@@ -1184,7 +1168,7 @@ type GetStatsRequest struct {
 
 func (x *GetStatsRequest) Reset() {
 	*x = GetStatsRequest{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[15]
+	mi := &file_notifier_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1196,7 +1180,7 @@ func (x *GetStatsRequest) String() string {
 func (*GetStatsRequest) ProtoMessage() {}
 
 func (x *GetStatsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[15]
+	mi := &file_notifier_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1209,7 +1193,7 @@ func (x *GetStatsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStatsRequest.ProtoReflect.Descriptor instead.
 func (*GetStatsRequest) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{15}
+	return file_notifier_proto_rawDescGZIP(), []int{15}
 }
 
 // GetStatsResponse returns notification statistics
@@ -1228,7 +1212,7 @@ type GetStatsResponse struct {
 
 func (x *GetStatsResponse) Reset() {
 	*x = GetStatsResponse{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[16]
+	mi := &file_notifier_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1240,7 +1224,7 @@ func (x *GetStatsResponse) String() string {
 func (*GetStatsResponse) ProtoMessage() {}
 
 func (x *GetStatsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[16]
+	mi := &file_notifier_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1253,7 +1237,7 @@ func (x *GetStatsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStatsResponse.ProtoReflect.Descriptor instead.
 func (*GetStatsResponse) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{16}
+	return file_notifier_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetStatsResponse) GetTotalSent() int64 {
@@ -1314,7 +1298,7 @@ type HealthCheckRequest struct {
 
 func (x *HealthCheckRequest) Reset() {
 	*x = HealthCheckRequest{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[17]
+	mi := &file_notifier_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1326,7 +1310,7 @@ func (x *HealthCheckRequest) String() string {
 func (*HealthCheckRequest) ProtoMessage() {}
 
 func (x *HealthCheckRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[17]
+	mi := &file_notifier_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1339,7 +1323,7 @@ func (x *HealthCheckRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthCheckRequest.ProtoReflect.Descriptor instead.
 func (*HealthCheckRequest) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{17}
+	return file_notifier_proto_rawDescGZIP(), []int{17}
 }
 
 // HealthCheckResponse returns health status
@@ -1354,7 +1338,7 @@ type HealthCheckResponse struct {
 
 func (x *HealthCheckResponse) Reset() {
 	*x = HealthCheckResponse{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[18]
+	mi := &file_notifier_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1366,7 +1350,7 @@ func (x *HealthCheckResponse) String() string {
 func (*HealthCheckResponse) ProtoMessage() {}
 
 func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[18]
+	mi := &file_notifier_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1379,7 +1363,7 @@ func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthCheckResponse.ProtoReflect.Descriptor instead.
 func (*HealthCheckResponse) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{18}
+	return file_notifier_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *HealthCheckResponse) GetHealthy() bool {
@@ -1406,7 +1390,7 @@ func (x *HealthCheckResponse) GetComponents() map[string]string {
 // NotifierInfo describes a notification type and its available accounts
 type NotifierInfo struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Type           NotificationType       `protobuf:"varint,1,opt,name=type,proto3,enum=notifier.v1.NotificationType" json:"type,omitempty"`        // notification type enum
+	Type           string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`                                           // e.g., "email", "slack", "stdout"
 	Accounts       []string               `protobuf:"bytes,2,rep,name=accounts,proto3" json:"accounts,omitempty"`                                   // configured account names
 	DefaultAccount string                 `protobuf:"bytes,3,opt,name=default_account,json=defaultAccount,proto3" json:"default_account,omitempty"` // default account to use
 	unknownFields  protoimpl.UnknownFields
@@ -1415,7 +1399,7 @@ type NotifierInfo struct {
 
 func (x *NotifierInfo) Reset() {
 	*x = NotifierInfo{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[19]
+	mi := &file_notifier_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1427,7 +1411,7 @@ func (x *NotifierInfo) String() string {
 func (*NotifierInfo) ProtoMessage() {}
 
 func (x *NotifierInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[19]
+	mi := &file_notifier_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1440,14 +1424,14 @@ func (x *NotifierInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotifierInfo.ProtoReflect.Descriptor instead.
 func (*NotifierInfo) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{19}
+	return file_notifier_proto_rawDescGZIP(), []int{19}
 }
 
-func (x *NotifierInfo) GetType() NotificationType {
+func (x *NotifierInfo) GetType() string {
 	if x != nil {
 		return x.Type
 	}
-	return NotificationType_NOTIFICATION_TYPE_UNSPECIFIED
+	return ""
 }
 
 func (x *NotifierInfo) GetAccounts() []string {
@@ -1473,7 +1457,7 @@ type GetNotifiersRequest struct {
 
 func (x *GetNotifiersRequest) Reset() {
 	*x = GetNotifiersRequest{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[20]
+	mi := &file_notifier_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1485,7 +1469,7 @@ func (x *GetNotifiersRequest) String() string {
 func (*GetNotifiersRequest) ProtoMessage() {}
 
 func (x *GetNotifiersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[20]
+	mi := &file_notifier_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1498,7 +1482,7 @@ func (x *GetNotifiersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNotifiersRequest.ProtoReflect.Descriptor instead.
 func (*GetNotifiersRequest) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{20}
+	return file_notifier_proto_rawDescGZIP(), []int{20}
 }
 
 // GetNotifiersResponse returns available notifiers
@@ -1511,7 +1495,7 @@ type GetNotifiersResponse struct {
 
 func (x *GetNotifiersResponse) Reset() {
 	*x = GetNotifiersResponse{}
-	mi := &file_api_grpc_notifier_proto_msgTypes[21]
+	mi := &file_notifier_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1523,7 +1507,7 @@ func (x *GetNotifiersResponse) String() string {
 func (*GetNotifiersResponse) ProtoMessage() {}
 
 func (x *GetNotifiersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_grpc_notifier_proto_msgTypes[21]
+	mi := &file_notifier_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1536,7 +1520,7 @@ func (x *GetNotifiersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNotifiersResponse.ProtoReflect.Descriptor instead.
 func (*GetNotifiersResponse) Descriptor() ([]byte, []int) {
-	return file_api_grpc_notifier_proto_rawDescGZIP(), []int{21}
+	return file_notifier_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *GetNotifiersResponse) GetNotifiers() []*NotifierInfo {
@@ -1546,11 +1530,11 @@ func (x *GetNotifiersResponse) GetNotifiers() []*NotifierInfo {
 	return nil
 }
 
-var File_api_grpc_notifier_proto protoreflect.FileDescriptor
+var File_notifier_proto protoreflect.FileDescriptor
 
-const file_api_grpc_notifier_proto_rawDesc = "" +
+const file_notifier_proto_rawDesc = "" +
 	"\n" +
-	"\x17api/grpc/notifier.proto\x12\vnotifier.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb9\x05\n" +
+	"\x0enotifier.proto\x12\vnotifier.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb9\x05\n" +
 	"\fNotification\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x121\n" +
 	"\x04type\x18\x02 \x01(\x0e2\x1d.notifier.v1.NotificationTypeR\x04type\x12\x18\n" +
@@ -1586,7 +1570,7 @@ const file_api_grpc_notifier_proto_rawDesc = "" +
 	"\x11provider_response\x18\x06 \x03(\v25.notifier.v1.NotificationResult.ProviderResponseEntryR\x10providerResponse\x1aC\n" +
 	"\x15ProviderResponseEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf8\x03\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd6\x03\n" +
 	"\x17SendNotificationRequest\x121\n" +
 	"\x04type\x18\x01 \x01(\x0e2\x1d.notifier.v1.NotificationTypeR\x04type\x12\x18\n" +
 	"\aaccount\x18\x02 \x01(\tR\aaccount\x121\n" +
@@ -1599,10 +1583,7 @@ const file_api_grpc_notifier_proto_rawDesc = "" +
 	"\bmetadata\x18\a \x03(\v22.notifier.v1.SendNotificationRequest.MetadataEntryR\bmetadata\x12?\n" +
 	"\rscheduled_for\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\fscheduledFor\x12\x1f\n" +
 	"\vmax_retries\x18\t \x01(\x05R\n" +
-	"maxRetries\x12\x0e\n" +
-	"\x02cc\x18\n" +
-	" \x03(\tR\x02cc\x12\x10\n" +
-	"\x03bcc\x18\v \x03(\tR\x03bcc\x1a;\n" +
+	"maxRetries\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"S\n" +
@@ -1666,9 +1647,9 @@ const file_api_grpc_notifier_proto_rawDesc = "" +
 	"components\x1a=\n" +
 	"\x0fComponentsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x86\x01\n" +
-	"\fNotifierInfo\x121\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x1d.notifier.v1.NotificationTypeR\x04type\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"g\n" +
+	"\fNotifierInfo\x12\x12\n" +
+	"\x04type\x18\x01 \x01(\tR\x04type\x12\x1a\n" +
 	"\baccounts\x18\x02 \x03(\tR\baccounts\x12'\n" +
 	"\x0fdefault_account\x18\x03 \x01(\tR\x0edefaultAccount\"\x15\n" +
 	"\x13GetNotifiersRequest\"O\n" +
@@ -1706,20 +1687,20 @@ const file_api_grpc_notifier_proto_rawDesc = "" +
 	"\fGetNotifiers\x12 .notifier.v1.GetNotifiersRequest\x1a!.notifier.v1.GetNotifiersResponseB,Z*github.com/igodwin/secretsanta/api/grpc/pbb\x06proto3"
 
 var (
-	file_api_grpc_notifier_proto_rawDescOnce sync.Once
-	file_api_grpc_notifier_proto_rawDescData []byte
+	file_notifier_proto_rawDescOnce sync.Once
+	file_notifier_proto_rawDescData []byte
 )
 
-func file_api_grpc_notifier_proto_rawDescGZIP() []byte {
-	file_api_grpc_notifier_proto_rawDescOnce.Do(func() {
-		file_api_grpc_notifier_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_grpc_notifier_proto_rawDesc), len(file_api_grpc_notifier_proto_rawDesc)))
+func file_notifier_proto_rawDescGZIP() []byte {
+	file_notifier_proto_rawDescOnce.Do(func() {
+		file_notifier_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_notifier_proto_rawDesc), len(file_notifier_proto_rawDesc)))
 	})
-	return file_api_grpc_notifier_proto_rawDescData
+	return file_notifier_proto_rawDescData
 }
 
-var file_api_grpc_notifier_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_api_grpc_notifier_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
-var file_api_grpc_notifier_proto_goTypes = []any{
+var file_notifier_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_notifier_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
+var file_notifier_proto_goTypes = []any{
 	(NotificationType)(0),                  // 0: notifier.v1.NotificationType
 	(Priority)(0),                          // 1: notifier.v1.Priority
 	(NotificationStatus)(0),                // 2: notifier.v1.NotificationStatus
@@ -1753,7 +1734,7 @@ var file_api_grpc_notifier_proto_goTypes = []any{
 	nil,                                    // 30: notifier.v1.HealthCheckResponse.ComponentsEntry
 	(*timestamppb.Timestamp)(nil),          // 31: google.protobuf.Timestamp
 }
-var file_api_grpc_notifier_proto_depIdxs = []int32{
+var file_notifier_proto_depIdxs = []int32{
 	0,  // 0: notifier.v1.Notification.type:type_name -> notifier.v1.NotificationType
 	1,  // 1: notifier.v1.Notification.priority:type_name -> notifier.v1.Priority
 	2,  // 2: notifier.v1.Notification.status:type_name -> notifier.v1.NotificationStatus
@@ -1781,54 +1762,53 @@ var file_api_grpc_notifier_proto_depIdxs = []int32{
 	28, // 24: notifier.v1.GetStatsResponse.by_type:type_name -> notifier.v1.GetStatsResponse.ByTypeEntry
 	29, // 25: notifier.v1.GetStatsResponse.by_status:type_name -> notifier.v1.GetStatsResponse.ByStatusEntry
 	30, // 26: notifier.v1.HealthCheckResponse.components:type_name -> notifier.v1.HealthCheckResponse.ComponentsEntry
-	0,  // 27: notifier.v1.NotifierInfo.type:type_name -> notifier.v1.NotificationType
-	22, // 28: notifier.v1.GetNotifiersResponse.notifiers:type_name -> notifier.v1.NotifierInfo
-	5,  // 29: notifier.v1.NotifierService.SendNotification:input_type -> notifier.v1.SendNotificationRequest
-	7,  // 30: notifier.v1.NotifierService.SendBatchNotifications:input_type -> notifier.v1.SendBatchNotificationsRequest
-	9,  // 31: notifier.v1.NotifierService.GetNotification:input_type -> notifier.v1.GetNotificationRequest
-	12, // 32: notifier.v1.NotifierService.ListNotifications:input_type -> notifier.v1.ListNotificationsRequest
-	14, // 33: notifier.v1.NotifierService.CancelNotification:input_type -> notifier.v1.CancelNotificationRequest
-	16, // 34: notifier.v1.NotifierService.RetryNotification:input_type -> notifier.v1.RetryNotificationRequest
-	18, // 35: notifier.v1.NotifierService.GetStats:input_type -> notifier.v1.GetStatsRequest
-	20, // 36: notifier.v1.NotifierService.HealthCheck:input_type -> notifier.v1.HealthCheckRequest
-	23, // 37: notifier.v1.NotifierService.GetNotifiers:input_type -> notifier.v1.GetNotifiersRequest
-	6,  // 38: notifier.v1.NotifierService.SendNotification:output_type -> notifier.v1.SendNotificationResponse
-	8,  // 39: notifier.v1.NotifierService.SendBatchNotifications:output_type -> notifier.v1.SendBatchNotificationsResponse
-	10, // 40: notifier.v1.NotifierService.GetNotification:output_type -> notifier.v1.GetNotificationResponse
-	13, // 41: notifier.v1.NotifierService.ListNotifications:output_type -> notifier.v1.ListNotificationsResponse
-	15, // 42: notifier.v1.NotifierService.CancelNotification:output_type -> notifier.v1.CancelNotificationResponse
-	17, // 43: notifier.v1.NotifierService.RetryNotification:output_type -> notifier.v1.RetryNotificationResponse
-	19, // 44: notifier.v1.NotifierService.GetStats:output_type -> notifier.v1.GetStatsResponse
-	21, // 45: notifier.v1.NotifierService.HealthCheck:output_type -> notifier.v1.HealthCheckResponse
-	24, // 46: notifier.v1.NotifierService.GetNotifiers:output_type -> notifier.v1.GetNotifiersResponse
-	38, // [38:47] is the sub-list for method output_type
-	29, // [29:38] is the sub-list for method input_type
-	29, // [29:29] is the sub-list for extension type_name
-	29, // [29:29] is the sub-list for extension extendee
-	0,  // [0:29] is the sub-list for field type_name
+	22, // 27: notifier.v1.GetNotifiersResponse.notifiers:type_name -> notifier.v1.NotifierInfo
+	5,  // 28: notifier.v1.NotifierService.SendNotification:input_type -> notifier.v1.SendNotificationRequest
+	7,  // 29: notifier.v1.NotifierService.SendBatchNotifications:input_type -> notifier.v1.SendBatchNotificationsRequest
+	9,  // 30: notifier.v1.NotifierService.GetNotification:input_type -> notifier.v1.GetNotificationRequest
+	12, // 31: notifier.v1.NotifierService.ListNotifications:input_type -> notifier.v1.ListNotificationsRequest
+	14, // 32: notifier.v1.NotifierService.CancelNotification:input_type -> notifier.v1.CancelNotificationRequest
+	16, // 33: notifier.v1.NotifierService.RetryNotification:input_type -> notifier.v1.RetryNotificationRequest
+	18, // 34: notifier.v1.NotifierService.GetStats:input_type -> notifier.v1.GetStatsRequest
+	20, // 35: notifier.v1.NotifierService.HealthCheck:input_type -> notifier.v1.HealthCheckRequest
+	23, // 36: notifier.v1.NotifierService.GetNotifiers:input_type -> notifier.v1.GetNotifiersRequest
+	6,  // 37: notifier.v1.NotifierService.SendNotification:output_type -> notifier.v1.SendNotificationResponse
+	8,  // 38: notifier.v1.NotifierService.SendBatchNotifications:output_type -> notifier.v1.SendBatchNotificationsResponse
+	10, // 39: notifier.v1.NotifierService.GetNotification:output_type -> notifier.v1.GetNotificationResponse
+	13, // 40: notifier.v1.NotifierService.ListNotifications:output_type -> notifier.v1.ListNotificationsResponse
+	15, // 41: notifier.v1.NotifierService.CancelNotification:output_type -> notifier.v1.CancelNotificationResponse
+	17, // 42: notifier.v1.NotifierService.RetryNotification:output_type -> notifier.v1.RetryNotificationResponse
+	19, // 43: notifier.v1.NotifierService.GetStats:output_type -> notifier.v1.GetStatsResponse
+	21, // 44: notifier.v1.NotifierService.HealthCheck:output_type -> notifier.v1.HealthCheckResponse
+	24, // 45: notifier.v1.NotifierService.GetNotifiers:output_type -> notifier.v1.GetNotifiersResponse
+	37, // [37:46] is the sub-list for method output_type
+	28, // [28:37] is the sub-list for method input_type
+	28, // [28:28] is the sub-list for extension type_name
+	28, // [28:28] is the sub-list for extension extendee
+	0,  // [0:28] is the sub-list for field type_name
 }
 
-func init() { file_api_grpc_notifier_proto_init() }
-func file_api_grpc_notifier_proto_init() {
-	if File_api_grpc_notifier_proto != nil {
+func init() { file_notifier_proto_init() }
+func file_notifier_proto_init() {
+	if File_notifier_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_grpc_notifier_proto_rawDesc), len(file_api_grpc_notifier_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_notifier_proto_rawDesc), len(file_notifier_proto_rawDesc)),
 			NumEnums:      3,
 			NumMessages:   28,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_api_grpc_notifier_proto_goTypes,
-		DependencyIndexes: file_api_grpc_notifier_proto_depIdxs,
-		EnumInfos:         file_api_grpc_notifier_proto_enumTypes,
-		MessageInfos:      file_api_grpc_notifier_proto_msgTypes,
+		GoTypes:           file_notifier_proto_goTypes,
+		DependencyIndexes: file_notifier_proto_depIdxs,
+		EnumInfos:         file_notifier_proto_enumTypes,
+		MessageInfos:      file_notifier_proto_msgTypes,
 	}.Build()
-	File_api_grpc_notifier_proto = out.File
-	file_api_grpc_notifier_proto_goTypes = nil
-	file_api_grpc_notifier_proto_depIdxs = nil
+	File_notifier_proto = out.File
+	file_notifier_proto_goTypes = nil
+	file_notifier_proto_depIdxs = nil
 }

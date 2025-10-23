@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Red Santa hat -->
+  <path d="M16 4 L8 18 L24 18 Z" fill="#C41E3A" stroke="#8B0000" stroke-width="0.5"/>
+
+  <!-- White fur trim -->
+  <ellipse cx="16" cy="18" rx="8.5" ry="2" fill="#FFFFFF"/>
+
+  <!-- White pom-pom -->
+  <circle cx="16" cy="4" r="3" fill="#FFFFFF" stroke="#E8E8E8" stroke-width="0.5"/>
+
+  <!-- Add some shading to the hat -->
+  <path d="M16 4 L24 18 L20 18 Z" fill="#A01729" opacity="0.3"/>
+</svg>

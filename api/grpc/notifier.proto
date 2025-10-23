@@ -31,6 +31,9 @@ service NotifierService {
 
   // HealthCheck verifies the service is operational
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+
+  // GetNotifiers returns available notification types and their configured accounts
+  rpc GetNotifiers(GetNotifiersRequest) returns (GetNotifiersResponse);
 }
 
 // NotificationType defines the channel for notification delivery
@@ -102,6 +105,8 @@ message SendNotificationRequest {
   map<string, string> metadata = 7;
   google.protobuf.Timestamp scheduled_for = 8;
   int32 max_retries = 9;
+  repeated string cc = 10; // CC recipients for email notifications
+  repeated string bcc = 11; // BCC recipients for email notifications
 }
 
 // SendNotificationResponse returns the result of sending a notification
@@ -195,4 +200,19 @@ message HealthCheckResponse {
   bool healthy = 1;
   string status = 2;
   map<string, string> components = 3;
+}
+
+// NotifierInfo describes a notification type and its available accounts
+message NotifierInfo {
+  NotificationType type = 1; // notification type enum
+  repeated string accounts = 2; // configured account names
+  string default_account = 3; // default account to use
+}
+
+// GetNotifiersRequest requests available notifiers
+message GetNotifiersRequest {}
+
+// GetNotifiersResponse returns available notifiers
+message GetNotifiersResponse {
+  repeated NotifierInfo notifiers = 1;
 }

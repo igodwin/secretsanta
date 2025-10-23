@@ -18,10 +18,10 @@ ARG TARGETOS
 ARG TARGETARCH
 ARG TARGETVARIANT
 
-# Build arguments for metadata
+# Build arguments
 ARG VERSION=dev
-ARG BUILD_DATE=unknown
-ARG VCS_REF=unknown
+ARG GIT_COMMIT=unknown
+ARG BUILD_TIME=unknown
 
 WORKDIR /app
 
@@ -37,7 +37,7 @@ COPY . .
 
 # Build the web server for target architecture with version info
 RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} GOARM=${TARGETVARIANT#v} \
-    go build -ldflags="-w -s -extldflags '-static' -X 'main.Version=${VERSION}' -X 'main.GitCommit=${VCS_REF}' -X 'main.BuildTime=${BUILD_DATE}'" \
+    go build -ldflags="-w -s -extldflags '-static' -X 'main.Version=${VERSION}' -X 'main.GitCommit=${GIT_COMMIT}' -X 'main.BuildTime=${BUILD_TIME}'" \
     -a -installsuffix cgo \
     -o secretsanta-web \
     ./cmd/web
@@ -48,9 +48,9 @@ FROM alpine:latest AS production
 # Build arguments for metadata
 ARG TARGETOS
 ARG TARGETARCH
-ARG BUILD_DATE
-ARG VERSION
-ARG VCS_REF
+ARG VERSION=dev
+ARG GIT_COMMIT=unknown
+ARG BUILD_TIME=unknown
 
 # Install ca-certificates for HTTPS requests
 RUN apk --no-cache add ca-certificates tzdata
@@ -96,13 +96,13 @@ LABEL maintainer="igodwin" \
       org.opencontainers.image.authors="igodwin" \
       org.opencontainers.image.vendor="igodwin" \
       org.opencontainers.image.version="${VERSION:-1.0.0}" \
-      org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.revision="${VCS_REF}" \
+      org.opencontainers.image.created="${BUILD_TIME}}" \
+      org.opencontainers.image.revision="${GIT_COMMIT}}" \
       org.opencontainers.image.source="https://github.com/igodwin/secretsanta" \
       org.opencontainers.image.documentation="https://github.com/igodwin/secretsanta" \
       org.opencontainers.image.licenses="MIT" \
-      org.label-schema.build-date="${BUILD_DATE}" \
-      org.label-schema.vcs-ref="${VCS_REF}" \
+      org.label-schema.build-time="${BUILD_TIME}}" \
+      org.label-schema.git-commit="${GIT_COMMIT}}" \
       org.label-schema.version="${VERSION:-1.0.0}" \
       org.label-schema.schema-version="1.0" \
       architecture="${TARGETARCH}" \

@@ -1,7 +1,8 @@
 // Application State
 const state = {
     participants: [],
-    drawResults: null
+    drawResults: null,
+    availableNotifiers: []
 };
 
 // API Base URL
@@ -382,13 +383,75 @@ function displayResults() {
     resultsSection.style.display = 'block';
     runDrawBtn.style.display = 'none';
 
-    resultsContainer.innerHTML = state.drawResults.map(p => `
-        <div class="result-card">
-            <div class="giver">${escapeHtml(p.name)}</div>
-            <div class="arrow">→</div>
-            <div class="recipient">${escapeHtml(p.recipient)}</div>
+    // Show the warning instead of the actual results
+    resultsContainer.innerHTML = `
+        <div class="papa-elf-warning">
+            <div class="elf-message">
+                <h3>🎅 HOLD IT RIGHT THERE, BUDDY! 🎄</h3>
+                <p style="font-size: 1.1em; margin: 20px 0;">
+                    Papa Elf here! Now listen up, sport - those Secret Santa assignments are
+                    <strong>TOP SECRET</strong>, just like the Claus family cookie recipe!
+                </p>
+                <p style="font-size: 1em; color: #666; margin: 15px 0;">
+                    Peeking at these results might spoil the MAGIC and WONDER of the holiday season!
+                    You could ruin surprises faster than putting maple syrup on spaghetti
+                    (which is delicious, by the way).
+                </p>
+                <p style="font-size: 1em; color: #d32f2f; margin: 15px 0; font-weight: bold;">
+                    ⚠️ Are you ABSOLUTELY, POSITIVELY, 100% SURE you want to see who's giving to whom? ⚠️
+                </p>
+                <p style="font-size: 0.9em; color: #888; margin: 10px 0;">
+                    (Remember: With great power comes great responsibility to keep secrets!)
+                </p>
+            </div>
+            <button id="reveal-results-btn" class="btn btn-warning btn-large" style="margin: 20px 0;">
+                Yes, I Understand the Consequences - Reveal Results
+            </button>
+            <p style="font-size: 0.85em; color: #999; margin-top: 10px;">
+                Don't say Papa Elf didn't warn you! 🤶
+            </p>
         </div>
-    `).join('');
+    `;
+
+    // Add event listener for reveal button
+    document.getElementById('reveal-results-btn').addEventListener('click', confirmAndRevealResults);
+}
+
+function confirmAndRevealResults() {
+    const confirmation = confirm(
+        "🎄 FINAL WARNING FROM PAPA ELF! 🎄\n\n" +
+        "You're about to reveal ALL the Secret Santa assignments!\n\n" +
+        "Once you see them, you can't unsee them - it's like trying to forget " +
+        "you saw Santa eating cookies at 3am!\n\n" +
+        "The magic of surprise will be GONE! KAPUT! FINITO!\n\n" +
+        "Are you really, truly, cross-your-heart sure you want to proceed?\n\n" +
+        "Click OK if you're ready to shoulder this tremendous responsibility,\n" +
+        "or Cancel if you'd rather keep the Christmas spirit alive!"
+    );
+
+    if (confirmation) {
+        revealActualResults();
+    }
+}
+
+function revealActualResults() {
+    const resultsContainer = document.getElementById('results-container');
+
+    resultsContainer.innerHTML = `
+        <div class="revealed-warning" style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 2px solid #ffc107;">
+            <p style="margin: 0; color: #856404; font-size: 0.95em;">
+                🎁 <strong>Papa Elf says:</strong> You've been entrusted with the sacred knowledge!
+                Guard it well, like the elves guard the Naughty & Nice List!
+            </p>
+        </div>
+        ${state.drawResults.map(p => `
+            <div class="result-card">
+                <div class="giver">${escapeHtml(p.name)}</div>
+                <div class="arrow">→</div>
+                <div class="recipient">${escapeHtml(p.recipient)}</div>
+            </div>
+        `).join('')}
+    `;
 }
 
 function exportResults() {
@@ -502,10 +565,20 @@ function displayNotificationStatus(status) {
         return;
     }
 
+    // Store available notifiers in state
+    state.availableNotifiers = status.available;
+
+    // Update the notification type dropdown
+    updateNotificationTypeDropdown();
+
     // Create badges for each notification type
-    const badges = status.available.map(type => {
+    const badges = status.available.map(notifier => {
+        const type = notifier.type || notifier; // Support both object and string format
         const icon = getNotificationIcon(type);
-        return `<span class="status-type" title="${type}">${icon} ${type}</span>`;
+        const accountInfo = notifier.accounts && notifier.accounts.length > 0
+            ? ` (${notifier.accounts.length} account${notifier.accounts.length > 1 ? 's' : ''})`
+            : '';
+        return `<span class="status-type" title="${type}${accountInfo}">${icon} ${type}</span>`;
     }).join('');
 
     let html = badges;
@@ -520,6 +593,50 @@ function displayNotificationStatus(status) {
     }
 
     container.innerHTML = html;
+}
+
+function updateNotificationTypeDropdown() {
+    const dropdown = document.getElementById('notification-type');
+    if (!dropdown) return;
+
+    // Clear existing options
+    dropdown.innerHTML = '';
+
+    // Populate with available notifier types
+    state.availableNotifiers.forEach(notifier => {
+        const type = notifier.type || notifier; // Support both object and string format
+
+        // If this notifier has multiple accounts, create an option for each
+        if (notifier.accounts && notifier.accounts.length > 0) {
+            notifier.accounts.forEach(account => {
+                const option = document.createElement('option');
+                // Format: type:account (e.g., "email:notify")
+                option.value = `${type}:${account}`;
+
+                // Create readable label
+                const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
+                const defaultMarker = account === notifier.default_account ? ' (default)' : '';
+                option.textContent = `${typeLabel} - ${account}${defaultMarker}`;
+
+                dropdown.appendChild(option);
+            });
+        } else {
+            // No accounts, just add the type
+            const option = document.createElement('option');
+            option.value = type;
+            const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
+            option.textContent = typeLabel;
+            dropdown.appendChild(option);
+        }
+    });
+
+    // If no notifiers available, add a default option
+    if (state.availableNotifiers.length === 0) {
+        const option = document.createElement('option');
+        option.value = 'stdout';
+        option.textContent = 'Console (stdout)';
+        dropdown.appendChild(option);
+    }
 }
 
 function getNotificationIcon(type) {
