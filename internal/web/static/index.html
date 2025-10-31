@@ -63,6 +63,17 @@
 
                 <div class="actions">
                     <button id="validate-btn" class="btn btn-secondary">Validate Configuration</button>
+                    <div class="download-section">
+                        <select id="download-format" class="download-format-select">
+                            <option value="">Select format to download...</option>
+                            <option value="json">JSON</option>
+                            <option value="yaml">YAML</option>
+                            <option value="toml">TOML</option>
+                            <option value="csv">CSV</option>
+                            <option value="tsv">TSV</option>
+                        </select>
+                        <button id="download-btn" class="btn btn-secondary" disabled>Download Participants</button>
+                    </div>
                     <button id="clear-btn" class="btn btn-danger">Clear All</button>
                 </div>
             </div>

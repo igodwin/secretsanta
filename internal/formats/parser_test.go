@@ -2,6 +2,8 @@ package formats
 
 import (
 	"testing"
+
+	"github.com/igodwin/secretsanta/pkg/participant"
 )
 
 func TestParseJSON(t *testing.T) {
@@ -183,5 +185,166 @@ Alice,email,alice@example.com; alice.alt@example.com,Bob; Carol`)
 
 	if len(participants[0].Exclusions) != 2 {
 		t.Errorf("Expected 2 exclusions, got %d", len(participants[0].Exclusions))
+	}
+}
+
+// Test export functions
+func TestExportJSON(t *testing.T) {
+	testParticipants := []*participant.Participant{
+		{
+			Name:             "Alice",
+			NotificationType: "email",
+			ContactInfo:      []string{"alice@example.com"},
+			Exclusions:       []string{"Bob"},
+		},
+		{
+			Name:             "Bob",
+			NotificationType: "email",
+			ContactInfo:      []string{"bob@example.com"},
+			Exclusions:       []string{"Alice"},
+		},
+	}
+
+	data, mimeType, err := ExportParticipants(testParticipants, FormatJSON)
+	if err != nil {
+		t.Fatalf("Failed to export JSON: %v", err)
+	}
+
+	if mimeType != "application/json" {
+		t.Errorf("Expected MIME type 'application/json', got '%s'", mimeType)
+	}
+
+	// Verify we can parse it back
+	parsed, err := Parse(data, FormatJSON)
+	if err != nil {
+		t.Fatalf("Failed to parse exported JSON: %v", err)
+	}
+
+	if len(parsed) != 2 {
+		t.Errorf("Expected 2 participants after round-trip, got %d", len(parsed))
+	}
+}
+
+// Test export functions
+func TestExportYAML(t *testing.T) {
+	testParticipants := []*participant.Participant{
+		{
+			Name:             "Alice",
+			NotificationType: "email",
+			ContactInfo:      []string{"alice@example.com"},
+			Exclusions:       []string{"Bob"},
+		},
+	}
+
+	data, mimeType, err := ExportParticipants(testParticipants, FormatYAML)
+	if err != nil {
+		t.Fatalf("Failed to export YAML: %v", err)
+	}
+
+	if mimeType != "application/x-yaml" {
+		t.Errorf("Expected MIME type 'application/x-yaml', got '%s'", mimeType)
+	}
+
+	// Verify we can parse it back
+	parsed, err := Parse(data, FormatYAML)
+	if err != nil {
+		t.Fatalf("Failed to parse exported YAML: %v", err)
+	}
+
+	if len(parsed) != 1 || parsed[0].Name != "Alice" {
+		t.Errorf("YAML round-trip failed")
+	}
+}
+
+// Test export functions
+func TestExportCSV(t *testing.T) {
+	testParticipants := []*participant.Participant{
+		{
+			Name:             "Alice",
+			NotificationType: "email",
+			ContactInfo:      []string{"alice@example.com"},
+			Exclusions:       []string{"Bob"},
+		},
+	}
+
+	data, mimeType, err := ExportParticipants(testParticipants, FormatCSV)
+	if err != nil {
+		t.Fatalf("Failed to export CSV: %v", err)
+	}
+
+	if mimeType != "text/csv" {
+		t.Errorf("Expected MIME type 'text/csv', got '%s'", mimeType)
+	}
+
+	// Verify we can parse it back
+	parsed, err := Parse(data, FormatCSV)
+	if err != nil {
+		t.Fatalf("Failed to parse exported CSV: %v", err)
+	}
+
+	if len(parsed) != 1 || parsed[0].Name != "Alice" {
+		t.Errorf("CSV round-trip failed")
+	}
+}
+
+// Test export functions
+func TestExportTSV(t *testing.T) {
+	testParticipants := []*participant.Participant{
+		{
+			Name:             "Alice",
+			NotificationType: "email",
+			ContactInfo:      []string{"alice@example.com"},
+			Exclusions:       []string{"Bob"},
+		},
+	}
+
+	data, mimeType, err := ExportParticipants(testParticipants, FormatTSV)
+	if err != nil {
+		t.Fatalf("Failed to export TSV: %v", err)
+	}
+
+	if mimeType != "text/tab-separated-values" {
+		t.Errorf("Expected MIME type 'text/tab-separated-values', got '%s'", mimeType)
+	}
+
+	// Verify we can parse it back
+	parsed, err := Parse(data, FormatTSV)
+	if err != nil {
+		t.Fatalf("Failed to parse exported TSV: %v", err)
+	}
+
+	if len(parsed) != 1 || parsed[0].Name != "Alice" {
+		t.Errorf("TSV round-trip failed")
+	}
+}
+
+// Test export functions
+func TestExportTOML(t *testing.T) {
+	testParticipants := []*participant.Participant{
+		{
+			Name:             "Alice",
+			NotificationType: "email",
+			ContactInfo:      []string{"alice@example.com"},
+			Exclusions:       []string{"Bob"},
+		},
+	}
+
+	data, mimeType, err := ExportParticipants(testParticipants, FormatTOML)
+	if err != nil {
+		t.Fatalf("Failed to export TOML: %v", err)
+	}
+
+	if mimeType != "application/toml" {
+		t.Errorf("Expected MIME type 'application/toml', got '%s'", mimeType)
+	}
+
+	// Verify we can parse it back
+	parsed, err := Parse(data, FormatTOML)
+	if err != nil {
+		t.Fatalf("Failed to parse exported TOML: %v", err)
+	}
+
+	if len(parsed) != 1 || parsed[0].Name != "Alice" {
+		t.Errorf("TOML round-trip failed")
 	}
 }

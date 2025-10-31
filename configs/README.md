@@ -71,7 +71,20 @@ notifier:
 
 See the [notifier service documentation](https://github.com/igodwin/notifier) for setup.
 
-### Example 4: SMTP with Archiving
+### Example 4: External Notifier with API Key
+
+For authenticated notifier service:
+
+```yaml
+notifier:
+  service_addr: "notifier.example.com:50051"
+  api_key: "sk_live_abc123xyz789"
+  archive_email: "archive@example.com"
+```
+
+The API key is automatically sent as a Bearer token in the gRPC metadata.
+
+### Example 5: SMTP with Archiving
 
 ```yaml
 smtp:
@@ -86,6 +99,19 @@ notifier:
   archive_email: "archive@example.com"  # BCC all emails to this address
 ```
 
+### Example 6: SMTP with HTML Email
+
+```yaml
+smtp:
+  host: "smtp.gmail.com"
+  port: "587"
+  username: "santa@example.com"
+  password: "your-app-password"
+  from_address: "santa@example.com"
+  from_name: "Secret Santa"
+  content_type: "text/html"  # Send emails as HTML formatted
+```
+
 ## Configuration Reference
 
 ### SMTP Section
@@ -98,15 +124,21 @@ notifier:
 | `password` | Yes* | SMTP password | `your-app-password` |
 | `from_address` | Yes* | From email address | `santa@example.com` |
 | `from_name` | No | From display name | `Secret Santa` (default) |
+| `content_type` | No | Email content type | `text/plain` (default) or `text/html` |
 | `identity` | No | SMTP identity (rarely needed) | Usually empty |
 
 *Required only if you want to use email notifications
+
+**Content Type Notes:**
+- `text/plain` (default): Plain text emails
+- `text/html`: HTML formatted emails (useful if your email body contains HTML formatting)
 
 ### Notifier Section
 
 | Field | Required | Description | Example |
 |-------|----------|-------------|---------|
 | `service_addr` | No | External notifier gRPC address | `localhost:50051` |
+| `api_key` | No | API key for notifier authentication (Bearer token) | `sk_live_abc123...` |
 | `archive_email` | No | BCC address for all notifications | `archive@example.com` |
 
 ## Testing Your Configuration
@@ -163,15 +195,24 @@ Check the footer - it will show "✗ notifier" if the service is configured but 
 You can also use environment variables (they override config file values):
 
 ```bash
+# SMTP configuration
 export SMTP_HOST=smtp.gmail.com
 export SMTP_PORT=587
 export SMTP_USERNAME=your-email@gmail.com
 export SMTP_PASSWORD=your-app-password
 export SMTP_FROM_ADDRESS=your-email@gmail.com
+
+# Notifier service configuration
 export NOTIFIER_SERVICE_ADDR=localhost:50051
+export NOTIFIER_API_KEY=sk_live_abc123xyz789  # Optional API key
+export NOTIFIER_ARCHIVE_EMAIL=archive@example.com
 
 ./bin/secretsanta-web
 ```
+
+All available environment variables:
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_ADDRESS`, `SMTP_FROM_NAME`, `SMTP_IDENTITY`, `SMTP_CONTENT_TYPE`
+- `NOTIFIER_SERVICE_ADDR`, `NOTIFIER_API_KEY`, `NOTIFIER_ARCHIVE_EMAIL`
 
 ## Security Best Practices
 

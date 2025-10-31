@@ -107,6 +107,7 @@ message SendNotificationRequest {
   int32 max_retries = 9;
   repeated string cc = 10; // CC recipients for email notifications
   repeated string bcc = 11; // BCC recipients for email notifications
+  string content_type = 12; // Content type for email notifications (e.g., "text/plain", "text/html")
 }
 
 // SendNotificationResponse returns the result of sending a notification

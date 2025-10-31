@@ -15,22 +15,22 @@ func Send(participants []*participant.Participant, appConfig *config.Config) err
 	if notifierServiceAddr == "" {
 		notifierServiceAddr = os.Getenv("NOTIFIER_SERVICE_ADDR")
 	}
-	
+
 	if notifierServiceAddr != "" {
-		return sendViaGRPC(participants, notifierServiceAddr, appConfig.Notifier.ArchiveEmail)
+		return sendViaGRPC(participants, notifierServiceAddr, appConfig.Notifier.ArchiveEmail, appConfig.Notifier.APIKey, appConfig.SMTP.ContentType)
 	}
-	
+
 	return sendViaLegacy(participants, appConfig)
 }
 
-func sendViaGRPC(participants []*participant.Participant, serverAddr, archiveEmail string) error {
-	grpcNotifier, err := NewGRPCNotifier(serverAddr)
+func sendViaGRPC(participants []*participant.Participant, serverAddr, archiveEmail, apiKey string, contentType string) error {
+	grpcNotifier, err := NewGRPCNotifierWithAPIKey(serverAddr, apiKey, &PapaElfTemplate{})
 	if err != nil {
 		return fmt.Errorf("failed to create gRPC notifier: %w", err)
 	}
 	defer grpcNotifier.Close()
 
-	return grpcNotifier.SendBatchNotifications(participants, archiveEmail)
+	return grpcNotifier.SendBatchNotifications(participants, archiveEmail, contentType)
 }
 
 func sendViaLegacy(participants []*participant.Participant, appConfig *config.Config) error {
@@ -43,6 +43,7 @@ func sendViaLegacy(participants []*participant.Participant, appConfig *config.Co
 		Password:    appConfig.SMTP.Password,
 		FromAddress: appConfig.SMTP.FromAddress,
 		FromName:    appConfig.SMTP.FromName,
+		ContentType: appConfig.SMTP.ContentType,
 	}
 
 	for _, participant := range participants {

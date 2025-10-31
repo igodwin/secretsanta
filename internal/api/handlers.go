@@ -16,6 +16,7 @@ import (
 	"github.com/igodwin/secretsanta/pkg/participant"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 
 	pb "github.com/igodwin/secretsanta/api/grpc/pb"
 )
@@ -335,7 +336,7 @@ func (s *Server) HandleStatus(w http.ResponseWriter, r *http.Request) {
 		response.UsingNotifier = true
 
 		// Try to query the notifier service for available types
-		notifierTypes, healthy, status, details := getNotifierInfo(cfg.Notifier.ServiceAddr)
+		notifierTypes, healthy, status, details := getNotifierInfo(cfg.Notifier.ServiceAddr, cfg.Notifier.APIKey)
 		response.NotifierHealthy = healthy
 		response.NotifierStatus = status
 		response.NotifierDetails = details
@@ -365,9 +366,14 @@ func (s *Server) HandleStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 // getNotifierInfo queries the notifier service for available notification types
-func getNotifierInfo(serviceAddr string) ([]NotifierTypeInfo, bool, string, map[string]string) {
+func getNotifierInfo(serviceAddr string, apiKey string) ([]NotifierTypeInfo, bool, string, map[string]string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
+	// Add API key to context if provided
+	if apiKey != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", fmt.Sprintf("Bearer %s", apiKey))
+	}
 
 	conn, err := grpc.DialContext(ctx, serviceAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -427,6 +433,55 @@ func convertNotifierTypeEnum(notifType pb.NotificationType) string {
 	}
 }
 
+// DownloadRequest contains the participants and desired format
+type DownloadRequest struct {
+	Participants []participant.Participant `json:"participants"`
+	Format       string                    `json:"format"`
+}
+
+// HandleDownload exports participants in the requested format for download
+func (s *Server) HandleDownload(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req DownloadRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, fmt.Sprintf("Invalid JSON: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	// Validate format
+	format := formats.FileFormat(req.Format)
+	switch format {
+	case formats.FormatJSON, formats.FormatYAML, formats.FormatTOML, formats.FormatCSV, formats.FormatTSV:
+		// Valid format
+	default:
+		http.Error(w, fmt.Sprintf("Unsupported format: %s", req.Format), http.StatusBadRequest)
+		return
+	}
+
+	// Convert participants to pointers
+	participants := make([]*participant.Participant, len(req.Participants))
+	for i := range req.Participants {
+		participants[i] = &req.Participants[i]
+	}
+
+	// Export in requested format
+	data, mimeType, err := formats.ExportParticipants(participants, format)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to export participants: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Set headers for download
+	filename := fmt.Sprintf("secretsanta-participants.%s", req.Format)
+	w.Header().Set("Content-Type", mimeType)
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+	w.Write(data)
+}
+
 // Start starts the HTTP server
 func (s *Server) Start() error {
 	mux := http.NewServeMux()
@@ -435,6 +490,7 @@ func (s *Server) Start() error {
 	mux.HandleFunc("/api/validate", s.HandleValidate)
 	mux.HandleFunc("/api/draw", s.HandleDraw)
 	mux.HandleFunc("/api/upload", s.HandleUpload)
+	mux.HandleFunc("/api/download", s.HandleDownload)
 	mux.HandleFunc("/api/export", s.HandleExport)
 	mux.HandleFunc("/api/template", s.HandleTemplate)
 	mux.HandleFunc("/api/status", s.HandleStatus)

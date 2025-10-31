@@ -450,8 +450,9 @@ type SendNotificationRequest struct {
 	Metadata      map[string]string      `protobuf:"bytes,7,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	ScheduledFor  *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=scheduled_for,json=scheduledFor,proto3" json:"scheduled_for,omitempty"`
 	MaxRetries    int32                  `protobuf:"varint,9,opt,name=max_retries,json=maxRetries,proto3" json:"max_retries,omitempty"`
-	Cc            []string               `protobuf:"bytes,10,rep,name=cc,proto3" json:"cc,omitempty"`   // CC recipients for email notifications
-	Bcc           []string               `protobuf:"bytes,11,rep,name=bcc,proto3" json:"bcc,omitempty"` // BCC recipients for email notifications
+	Cc            []string               `protobuf:"bytes,10,rep,name=cc,proto3" json:"cc,omitempty"`                                      // CC recipients for email notifications
+	Bcc           []string               `protobuf:"bytes,11,rep,name=bcc,proto3" json:"bcc,omitempty"`                                    // BCC recipients for email notifications
+	ContentType   string                 `protobuf:"bytes,12,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"` // Content type for email notifications (e.g., "text/plain", "text/html")
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -561,6 +562,13 @@ func (x *SendNotificationRequest) GetBcc() []string {
 		return x.Bcc
 	}
 	return nil
+}
+
+func (x *SendNotificationRequest) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
 }
 
 // SendNotificationResponse returns the result of sending a notification
@@ -1586,7 +1594,7 @@ const file_api_grpc_notifier_proto_rawDesc = "" +
 	"\x11provider_response\x18\x06 \x03(\v25.notifier.v1.NotificationResult.ProviderResponseEntryR\x10providerResponse\x1aC\n" +
 	"\x15ProviderResponseEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf8\x03\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9b\x04\n" +
 	"\x17SendNotificationRequest\x121\n" +
 	"\x04type\x18\x01 \x01(\x0e2\x1d.notifier.v1.NotificationTypeR\x04type\x12\x18\n" +
 	"\aaccount\x18\x02 \x01(\tR\aaccount\x121\n" +
@@ -1602,7 +1610,8 @@ const file_api_grpc_notifier_proto_rawDesc = "" +
 	"maxRetries\x12\x0e\n" +
 	"\x02cc\x18\n" +
 	" \x03(\tR\x02cc\x12\x10\n" +
-	"\x03bcc\x18\v \x03(\tR\x03bcc\x1a;\n" +
+	"\x03bcc\x18\v \x03(\tR\x03bcc\x12!\n" +
+	"\fcontent_type\x18\f \x01(\tR\vcontentType\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"S\n" +

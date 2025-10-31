@@ -64,13 +64,15 @@ func TestHandleValidate(t *testing.T) {
 func TestHandleDraw(t *testing.T) {
 	server := NewServer(":8080")
 
-	participants := []*participant.Participant{
-		{Name: "Alice", ContactInfo: []string{"alice@example.com"}, Exclusions: []string{}},
-		{Name: "Bob", ContactInfo: []string{"bob@example.com"}, Exclusions: []string{}},
-		{Name: "Carol", ContactInfo: []string{"carol@example.com"}, Exclusions: []string{}},
+	drawRequest := DrawRequest{
+		Participants: []participant.Participant{
+			{Name: "Alice", ContactInfo: []string{"alice@example.com"}, Exclusions: []string{}},
+			{Name: "Bob", ContactInfo: []string{"bob@example.com"}, Exclusions: []string{}},
+			{Name: "Carol", ContactInfo: []string{"carol@example.com"}, Exclusions: []string{}},
+		},
 	}
 
-	body, _ := json.Marshal(participants)
+	body, _ := json.Marshal(drawRequest)
 	req := httptest.NewRequest(http.MethodPost, "/api/draw", bytes.NewReader(body))
 	w := httptest.NewRecorder()
 
@@ -103,11 +105,13 @@ func TestHandleDrawInvalid(t *testing.T) {
 	server := NewServer(":8080")
 
 	// Invalid: only 1 participant
-	participants := []*participant.Participant{
-		{Name: "Alice", ContactInfo: []string{"alice@example.com"}, Exclusions: []string{}},
+	drawRequest := DrawRequest{
+		Participants: []participant.Participant{
+			{Name: "Alice", ContactInfo: []string{"alice@example.com"}, Exclusions: []string{}},
+		},
 	}
 
-	body, _ := json.Marshal(participants)
+	body, _ := json.Marshal(drawRequest)
 	req := httptest.NewRequest(http.MethodPost, "/api/draw", bytes.NewReader(body))
 	w := httptest.NewRecorder()
 

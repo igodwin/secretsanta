@@ -78,6 +78,8 @@ function initializeCreateTab() {
     const form = document.getElementById('participant-form');
     const validateBtn = document.getElementById('validate-btn');
     const clearBtn = document.getElementById('clear-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const downloadFormatSelect = document.getElementById('download-format');
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -86,6 +88,11 @@ function initializeCreateTab() {
 
     validateBtn.addEventListener('click', validateParticipants);
     clearBtn.addEventListener('click', clearAllParticipants);
+    downloadBtn.addEventListener('click', downloadParticipants);
+    downloadFormatSelect.addEventListener('change', (e) => {
+        // Enable/disable download button based on format selection
+        downloadBtn.disabled = state.participants.length === 0 || !e.target.value;
+    });
 }
 
 function addParticipant() {
@@ -169,6 +176,10 @@ function updateParticipantCount() {
     // Enable/disable draw button
     const drawBtn = document.getElementById('run-draw-btn');
     drawBtn.disabled = state.participants.length < 2;
+
+    // Enable/disable download button
+    const downloadBtn = document.getElementById('download-btn');
+    downloadBtn.disabled = state.participants.length === 0;
 }
 
 async function validateParticipants() {
@@ -636,6 +647,51 @@ function updateNotificationTypeDropdown() {
         option.value = 'stdout';
         option.textContent = 'Console (stdout)';
         dropdown.appendChild(option);
+    }
+}
+
+async function downloadParticipants() {
+    const format = document.getElementById('download-format').value;
+
+    if (!format) {
+        showToast('Please select a format to download', 'warning');
+        return;
+    }
+
+    if (state.participants.length === 0) {
+        showToast('No participants to download', 'warning');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/api/download`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                participants: state.participants,
+                format: format
+            })
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            showToast('Download failed: ' + text, 'error');
+            return;
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `secretsanta-participants.${format}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        showToast('Participants downloaded successfully', 'success');
+    } catch (error) {
+        showToast('Download failed: ' + error.message, 'error');
     }
 }
 

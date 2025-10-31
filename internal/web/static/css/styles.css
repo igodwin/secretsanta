@@ -469,6 +469,33 @@ main {
     gap: 12px;
     justify-content: center;
     margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+.download-section {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.download-format-select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.download-format-select:hover {
+    border-color: var(--secondary-color);
+}
+
+.download-format-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
 }
 
 /* Modal */

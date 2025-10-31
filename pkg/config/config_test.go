@@ -57,10 +57,12 @@ var _ = Describe("Config", func() {
 		Expect(file.Close()).To(Succeed())
 
 		config.Paths = []string{tempDir}
+		config.ResetConfig()
 	})
 
 	AfterEach(func() {
 		Expect(os.RemoveAll(tempDir)).To(Succeed())
+		config.ResetConfig()
 	})
 
 	Context("using valid config", func() {

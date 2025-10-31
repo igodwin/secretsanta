@@ -46,6 +46,7 @@ var _ = Describe("Email Notifier", func() {
 			Password:     "password",
 			FromAddress:  "noreply@example.com",
 			FromName:     "",
+			ContentType:  "text/plain",
 			SendMailFunc: mockSendMail,
 		}
 	})
@@ -58,6 +59,42 @@ var _ = Describe("Email Notifier", func() {
 		It("should error when smtp is not configured", func() {
 			err := badEmailNotifier.SendNotification(testParticipant)
 			Expect(err).To(HaveOccurred())
+		})
+
+		It("should include Content-Type header with text/plain", func() {
+			messageCapture := ""
+			captureFunc := func(addr string, a smtp.Auth, from string, to []string, msg []byte) error {
+				messageCapture = string(msg)
+				return nil
+			}
+			emailNotifier.ContentType = "text/plain"
+			emailNotifier.SendMailFunc = captureFunc
+			emailNotifier.SendNotification(testParticipant)
+			Expect(messageCapture).To(ContainSubstring("Content-Type: text/plain; charset=UTF-8"))
+		})
+
+		It("should include Content-Type header with text/html", func() {
+			messageCapture := ""
+			captureFunc := func(addr string, a smtp.Auth, from string, to []string, msg []byte) error {
+				messageCapture = string(msg)
+				return nil
+			}
+			emailNotifier.ContentType = "text/html"
+			emailNotifier.SendMailFunc = captureFunc
+			emailNotifier.SendNotification(testParticipant)
+			Expect(messageCapture).To(ContainSubstring("Content-Type: text/html; charset=UTF-8"))
+		})
+
+		It("should default to text/plain when ContentType is empty", func() {
+			messageCapture := ""
+			captureFunc := func(addr string, a smtp.Auth, from string, to []string, msg []byte) error {
+				messageCapture = string(msg)
+				return nil
+			}
+			emailNotifier.ContentType = ""
+			emailNotifier.SendMailFunc = captureFunc
+			emailNotifier.SendNotification(testParticipant)
+			Expect(messageCapture).To(ContainSubstring("Content-Type: text/plain; charset=UTF-8"))
 		})
 	})
 

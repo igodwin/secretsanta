@@ -183,3 +183,118 @@ func parseListField(s string) []string {
 	}
 	return items
 }
+
+// ExportParticipants exports participants to the specified format
+func ExportParticipants(participants []*participant.Participant, format FileFormat) ([]byte, string, error) {
+	switch format {
+	case FormatJSON:
+		return exportJSON(participants)
+	case FormatYAML:
+		return exportYAML(participants)
+	case FormatTOML:
+		return exportTOML(participants)
+	case FormatCSV:
+		return exportCSV(participants)
+	case FormatTSV:
+		return exportTSV(participants)
+	default:
+		return nil, "", fmt.Errorf("unsupported format: %s", format)
+	}
+}
+
+// exportJSON exports participants as JSON
+func exportJSON(participants []*participant.Participant) ([]byte, string, error) {
+	data, err := json.MarshalIndent(participants, "", "  ")
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to marshal JSON: %w", err)
+	}
+	return data, "application/json", nil
+}
+
+// exportYAML exports participants as YAML
+func exportYAML(participants []*participant.Participant) ([]byte, string, error) {
+	data, err := yaml.Marshal(participants)
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to marshal YAML: %w", err)
+	}
+	return data, "application/x-yaml", nil
+}
+
+// exportTOML exports participants as TOML
+func exportTOML(participants []*participant.Participant) ([]byte, string, error) {
+	// TOML requires a root struct with the array
+	type root struct {
+		Participants []*participant.Participant `toml:"participants"`
+	}
+	r := root{Participants: participants}
+	data, err := toml.Marshal(r)
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to marshal TOML: %w", err)
+	}
+	return data, "application/toml", nil
+}
+
+// exportCSV exports participants as CSV
+func exportCSV(participants []*participant.Participant) ([]byte, string, error) {
+	var sb strings.Builder
+	writer := csv.NewWriter(&sb)
+
+	// Write header
+	header := []string{"name", "notification_type", "contact_info", "exclusions"}
+	if err := writer.Write(header); err != nil {
+		return nil, "", fmt.Errorf("failed to write CSV header: %w", err)
+	}
+
+	// Write records
+	for _, p := range participants {
+		record := []string{
+			p.Name,
+			p.NotificationType,
+			strings.Join(p.ContactInfo, ","),
+			strings.Join(p.Exclusions, ","),
+		}
+		if err := writer.Write(record); err != nil {
+			return nil, "", fmt.Errorf("failed to write CSV record: %w", err)
+		}
+	}
+
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		return nil, "", fmt.Errorf("CSV write error: %w", err)
+	}
+
+	return []byte(sb.String()), "text/csv", nil
+}
+
+// exportTSV exports participants as TSV
+func exportTSV(participants []*participant.Participant) ([]byte, string, error) {
+	var sb strings.Builder
+	writer := csv.NewWriter(&sb)
+	writer.Comma = '\t'
+
+	// Write header
+	header := []string{"name", "notification_type", "contact_info", "exclusions"}
+	if err := writer.Write(header); err != nil {
+		return nil, "", fmt.Errorf("failed to write TSV header: %w", err)
+	}
+
+	// Write records
+	for _, p := range participants {
+		record := []string{
+			p.Name,
+			p.NotificationType,
+			strings.Join(p.ContactInfo, ","),
+			strings.Join(p.Exclusions, ","),
+		}
+		if err := writer.Write(record); err != nil {
+			return nil, "", fmt.Errorf("failed to write TSV record: %w", err)
+		}
+	}
+
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		return nil, "", fmt.Errorf("TSV write error: %w", err)
+	}
+
+	return []byte(sb.String()), "text/tab-separated-values", nil
+}

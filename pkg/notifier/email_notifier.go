@@ -30,6 +30,7 @@ type EmailNotifier struct {
 	Password     string
 	FromAddress  string
 	FromName     string
+	ContentType  string
 	SendMailFunc SendMailFunc
 }
 
@@ -40,11 +41,19 @@ func (e *EmailNotifier) SendNotification(participant *participant.Participant) e
 	if e.FromName != "" {
 		from = fmt.Sprintf(`"%s" <%s>`, e.FromName, e.FromAddress)
 	}
-	formattedMessage := []byte(fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s%s\r\n\r\n%s",
+
+	// Set default content type if not specified
+	contentType := e.ContentType
+	if contentType == "" {
+		contentType = "text/plain"
+	}
+
+	formattedMessage := []byte(fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s%s\r\nContent-Type: %s; charset=UTF-8\r\n\r\n%s",
 		from,
 		allAddresses,
 		participant.Name,
 		subjectSuffix,
+		contentType,
 		fmt.Sprintf(emailBodyTemplate, participant.Name, participant.Recipient.Name)))
 
 	if e.SendMailFunc == nil {

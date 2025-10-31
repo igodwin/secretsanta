@@ -30,12 +30,12 @@ all: build copy-config
 build:
 	@echo "Building the web server..."
 	@mkdir -p $(BUILD_DIR)
-	go build -ldflags="$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/web
+	go build -ldflags="$(LDFLAGS) -w -s" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/web
 
 build-linux:
 	@echo "Building for Linux..."
 	@mkdir -p $(BUILD_DIR)
-	GOOS=linux GOARCH=amd64 go build -ldflags="$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY_NAME)-linux ./cmd/web
+	GOOS=linux GOARCH=amd64 go build -ldflags="$(LDFLAGS) -w -s" -o $(BUILD_DIR)/$(BINARY_NAME)-linux ./cmd/web
 
 run-web:
 	@echo "Starting web server..."
